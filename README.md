@@ -1,8 +1,11 @@
 # School Charity Shop
 
-A small website where students and teachers donate things, people buy them online,
-and all the money goes to one person in need. Buyers collect their item from the
-school charity room with a pickup code.
+A small website where students and teachers donate things, people buy them, and
+all the money goes to one person in need by card transfer. Buyers collect their
+item from the school charity room with a pickup code.
+
+Written in plain PHP with an MVC structure. No framework and no Composer packages,
+so it runs on ordinary shared hosting.
 
 ## How it works
 
@@ -10,136 +13,90 @@ school charity room with a pickup code.
    name and price, and brings the item to the charity room.
 2. **Approve**: a teacher logs in to `/admin` and approves the item. Only approved
    items appear in the shop.
-3. **Buy**: a buyer opens the item, enters name and phone, and sees the card number
-   and the exact amount. They send the money from their own bank app (Payme, Click,
-   Uzum, ...) and press *I've sent the money*, giving the last 4 digits of their card.
-   The item is held for 30 minutes while they pay, so two people can't buy it.
-4. **Confirm**: the teacher checks the bank app for the card. On the admin page,
-   under *Check payments*, or in the Telegram message the bot sends them, they
-   press *Money arrived* (or *Not received*).
-5. **Pick up**: after the payment is confirmed the buyer's page shows a 6-letter
-   pickup code. In the charity room the teacher types the code on the admin page,
-   checks the photo, and presses *Mark as handed over*.
+3. **Buy**: the buyer enters their name and phone and sees the card number and the
+   exact amount. They send the money from their own bank app (Payme, Click, Uzum, ...)
+   and press *I've sent the money*, giving the last 4 digits of their card. The item
+   is held for 30 minutes while they pay, so two people can't buy it.
+4. **Confirm**: a teacher checks that the money arrived on the card and presses
+   *Money arrived* (or *Not received*) on the admin page or in Telegram.
+5. **Pick up**: the buyer's page then shows a 6-letter pickup code. In the charity
+   room the teacher types the code on the admin page and presses *Mark as handed over*.
 
-The site is in **Uzbek, Russian and English**. Visitors switch language at the top
-of the page; the first visit uses the browser's language (Uzbek by default).
-All texts are in `src/i18n.js`.
+The site is in **Uzbek, Russian and English**; visitors switch at the top of the page.
 
-The home page shows how much money has been raised.
+## Requirements
 
-## Run it on your computer
+- PHP 8.1 or newer with the `pdo_sqlite` (or `pdo_mysql`), `curl`, `mbstring` and
+  `fileinfo` extensions. Most hosting has these.
+- Apache with `mod_rewrite` (the `.htaccess` files are included), or nginx (see below).
 
-You need [Node.js](https://nodejs.org) 22.13 or newer.
+## Try it on your computer
 
 ```bash
-npm install
-cp .env.example .env     # then edit .env: at least ADMIN_PASSWORD and SESSION_SECRET
-npm start
+cp config.example.php config.php    # then edit config.php
+php -S localhost:8000 -t public public/index.php
 ```
 
-Open http://localhost:3000. The admin page is http://localhost:3000/admin.
+Open http://localhost:8000. The admin page is http://localhost:8000/admin.
+To try buying without sending money, add `'test'` to `payments` in `config.php`.
 
-To try the whole flow without sending real money, set `PAYMENT_PROVIDERS=card,test`.
-"Test" adds a fake payment button. Remove it before going live.
+## Put it on hosting
 
-## Put it on a server
+1. Upload all files.
+2. Point the site's folder (document root) at `public/`. If your hosting doesn't
+   allow that, upload everything into `public_html`; the root `.htaccess` sends
+   visitors into `public/` and blocks the other folders.
+3. Copy `config.example.php` to `config.php` and fill it in: recipient name and card,
+   admin password, `base_url` (your https address).
+4. Make `storage/` and `public/uploads/` writable by PHP.
 
-Any small VPS (1 GB RAM is plenty) works.
+The database:
+- **SQLite** (default): nothing to do, the file `storage/shop.db` is created on the
+  first visit.
+- **MySQL**: create a database, import `database/schema.mysql.sql` (phpMyAdmin →
+  Import), and set `db.dsn`, `db.user`, `db.password` in `config.php`.
 
-```bash
-# on the server
-git clone <your repo> charity-shop && cd charity-shop
-npm install --omit=dev
-cp .env.example .env && nano .env
-npm start
+**Back up** the database and `public/uploads/` (the photos).
+
+### nginx
+
+```nginx
+root /var/www/charity-shop/public;
+location / { try_files $uri /index.php?$query_string; }
+location ~ ^/index\.php$ { include fastcgi_params; fastcgi_param SCRIPT_FILENAME $document_root/index.php; fastcgi_pass unix:/run/php/php8.3-fpm.sock; }
+location ~ \.php$ { deny all; }
 ```
 
-Or with Docker:
-
-```bash
-docker build -t charity-shop .
-docker run -d --name charity-shop --restart unless-stopped -p 3000:3000 \
-  --env-file .env -v charity-data:/app/data -v charity-uploads:/app/uploads charity-shop
-```
-
-Put it behind HTTPS (for example [Caddy](https://caddyserver.com): `caddy reverse-proxy --from shop.yourschool.uz --to :3000`).
-Payme and Click require HTTPS for their callbacks. Set `BASE_URL` in `.env` to your
-public address.
-
-**Back up** the `data/` folder (the database) and `uploads/` folder (photos).
-
-## Payments
-
-**Card transfer (default, `PAYMENT_PROVIDERS=card`)**: buyers send money straight
-to the card in `RECIPIENT_CARD`. No contract with a payment company is needed. The
-teacher who has access to that card's bank app (or SMS notifications) confirms each
-payment on the admin page. Only after that does the buyer get the pickup code.
-
-**Automatic payments (optional)**: Payme and Click can confirm payments
-automatically, but they pay out to the bank account of a registered business (the
-*merchant*), not to a personal card. If the school or a charity fund registers with
-**Payme Business** (https://business.payme.uz) or **Click** (https://click.uz/en/business),
-you can turn these on as well, e.g. `PAYMENT_PROVIDERS=card,payme`.
-
-### Telegram confirmations
+## Telegram confirmations
 
 Admins can get a Telegram message for every card payment, with the item photo,
-amount, buyer and the last 4 digits of the card they paid from. Two buttons,
-**Money arrived** and **Not received**, do the same as the admin page. When one
-admin presses a button, the message updates for every admin, so a payment is never
-handled twice.
+amount, buyer and the last 4 digits of their card, plus **Money arrived** and
+**Not received** buttons. When one admin presses a button, the message updates for
+every admin, so a payment is never handled twice.
 
-1. In Telegram, open **@BotFather**, send `/newbot` and follow the steps. Copy the
-   token it gives you into `TELEGRAM_BOT_TOKEN` in `.env`.
-2. Restart the site and send any message to your new bot. It replies with your
-   Telegram ID.
-3. Put that ID in `TELEGRAM_ADMIN_IDS` (several IDs separated by commas) and restart.
+1. In Telegram, open **@BotFather**, send `/newbot` and follow the steps. Put the
+   token in `telegram.bot_token` in `config.php`.
+2. The site must be on https. Log in to `/admin` and press **Connect Telegram bot**.
+3. Send any message to your bot. It replies with your Telegram ID.
+4. Put that ID in `telegram.admin_ids` (e.g. `[123456789]`, several allowed).
 
-The bot asks Telegram for new button presses itself (long polling), so it works
-without HTTPS or any extra setup. Only the IDs in `TELEGRAM_ADMIN_IDS` can press
-the buttons.
+Only the IDs in `admin_ids` can press the buttons.
 
-### Payme setup
-
-In the Payme merchant cabinet:
-- Endpoint URL: `https://YOUR-SITE/payments/payme`
-- Account field: `order_id`
-
-In `.env`:
-```
-PAYMENT_PROVIDERS=payme
-PAYME_MERCHANT_ID=...      # from the cabinet
-PAYME_KEY=...              # test key first, then the real key
-PAYME_TEST_MODE=true       # set to false when going live
-```
-Run Payme's sandbox tests (https://test.paycom.uz) before switching to live.
-
-### Click setup
-
-In the Click merchant cabinet:
-- Prepare URL: `https://YOUR-SITE/payments/click/prepare`
-- Complete URL: `https://YOUR-SITE/payments/click/complete`
-
-In `.env`:
-```
-PAYMENT_PROVIDERS=click        # or payme,click to offer both
-CLICK_SERVICE_ID=...
-CLICK_MERCHANT_ID=...
-CLICK_SECRET_KEY=...
-```
-
-**Never leave `test` in `PAYMENT_PROVIDERS` on the live site**, otherwise anyone could
-"pay" with the fake payment page. The admin page shows a warning while it's on.
-
-## Project layout
+## Code layout (MVC)
 
 ```
-src/server.js          pages and routes
-src/shop.js            order rules: reserve, paid, cancel, picked up
-src/db.js              SQLite database (built into Node, no setup needed)
-src/views.js           shared page layout and language switch
-src/i18n.js            all texts in Uzbek, Russian and English
-src/telegram.js        Telegram bot for payment confirmations
-src/payments/          card, payme, click and test payments
-public/style.css       styles
+public/index.php          front controller: all routes are listed here
+public/style.css          styles
+public/uploads/           donated item photos
+app/Core/                 small framework: Router, Controller, View, Database, Lang, Auth, Csrf
+app/Models/               Item, Order (all database queries)
+app/Controllers/          Shop, Donate, Payment, Order, Admin, Telegram, Lang
+app/Views/                HTML templates (layout.php wraps every page)
+app/Services/Telegram.php Telegram bot
+app/lang/                 texts in uz.php, ru.php, en.php
+database/                 schema for SQLite and MySQL
+config.example.php        settings (copy to config.php)
 ```
+
+Every form is protected with a CSRF token, uploaded photos are checked by their
+real file type, and the uploads folder can't run scripts.

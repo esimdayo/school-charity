@@ -1,5 +1,4 @@
-node_modules/
-data/
-uploads/*
-!uploads/.gitkeep
-.env
+config.php
+storage/*.db*
+public/uploads/*
+!public/uploads/.htaccess

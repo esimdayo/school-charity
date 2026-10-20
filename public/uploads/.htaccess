@@ -1,0 +1,5 @@
+# Uploaded photos are only ever images: never run scripts from here.
+<FilesMatch "\.(php|phtml|phar|pl|py|cgi|sh)$">
+  Require all denied
+</FilesMatch>
+Options -Indexes -ExecCGI
