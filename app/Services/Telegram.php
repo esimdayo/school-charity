@@ -37,7 +37,8 @@ final class Telegram
         return hash('sha256', 'webhook:' . App::config('telegram.bot_token', ''));
     }
 
-    public static function call(string $method, array $params, bool $multipart = false, int $timeout = 10): ?array
+    // Returns Telegram's result (an array, or true for some methods), or null on failure.
+    public static function call(string $method, array $params, bool $multipart = false, int $timeout = 10): mixed
     {
         $url = rtrim((string) App::config('telegram.api_url', 'https://api.telegram.org'), '/')
             . '/bot' . App::config('telegram.bot_token') . '/' . $method;
