@@ -25,11 +25,15 @@ $action = '/pay/card/' . e($order['token']);
   <p class="muted small"><?= t('exact_amount') ?> <?= t('card_time', ['min' => $minutes]) ?></p>
   <p><?= t('card_step2') ?></p>
   <?php if ($error): ?><p class="badge warn"><?= e($error) ?></p><?php endif ?>
-  <form method="post" action="<?= $action ?>" class="stack">
+  <form method="post" action="<?= $action ?>" enctype="multipart/form-data" class="stack">
     <?= Csrf::field() ?>
     <label><?= t('payer_card') ?>
       <input name="last4" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required placeholder="1234">
       <span class="muted small hint"><?= t('payer_card_hint') ?></span>
+    </label>
+    <label><?= t('receipt_label') ?>
+      <input type="file" name="receipt" accept="image/jpeg,image/png,image/webp">
+      <span class="muted small hint"><?= t('receipt_hint') ?></span>
     </label>
     <button class="btn big" name="result" value="sent"><?= t('sent_button') ?></button>
   </form>

@@ -11,6 +11,14 @@ $v = fn ($k) => e($old[$k] ?? '');
     <?= Csrf::field() ?>
     <label><?= t('photo') ?> <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" capture="environment" required></label>
     <label><?= t('what_is_it') ?> <input name="title" required maxlength="80" value="<?= $v('title') ?>" placeholder="<?= e(t('what_placeholder')) ?>"></label>
+    <label><?= t('category') ?>
+      <select name="category" required>
+        <option value=""><?= t('choose_category_option') ?></option>
+        <?php foreach (Item::CATEGORIES as $c): ?>
+          <option value="<?= $c ?>" <?= ($old['category'] ?? '') === $c ? 'selected' : '' ?>><?= t('cat_' . $c) ?></option>
+        <?php endforeach ?>
+      </select>
+    </label>
     <label><?= t('description') ?> <textarea name="description" maxlength="1000" rows="3" placeholder="<?= e(t('description_placeholder')) ?>"><?= $v('description') ?></textarea></label>
     <label><?= t('price') ?> <input name="price" type="number" min="1000" step="500" required value="<?= $v('price') ?>" placeholder="20000"></label>
     <label><?= t('your_name') ?> <input name="donor_name" required maxlength="80" value="<?= $v('donor_name') ?>"></label>

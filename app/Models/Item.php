@@ -9,15 +9,23 @@ use App\Core\Database as DB;
 final class Item
 {
     public const ROLES = ['student', 'teacher', 'parent', 'other'];
+    public const CATEGORIES = ['books', 'electronics', 'stationery', 'sports', 'toys', 'clothing', 'other'];
 
     public static function find(int $id): ?array
     {
         return DB::one('SELECT * FROM items WHERE id = ?', [$id]);
     }
 
-    public static function available(): array
+    // Items on sale, optionally only one category and only names or
+    // descriptions containing $search (any case, also Cyrillic).
+    public static function available(string $category = '', string $search = ''): array
     {
-        return DB::all("SELECT * FROM items WHERE status = 'available' ORDER BY created_at DESC");
+        $items = $category !== ''
+            ? DB::all("SELECT * FROM items WHERE status = 'available' AND category = ? ORDER BY created_at DESC", [$category])
+            : DB::all("SELECT * FROM items WHERE status = 'available' ORDER BY created_at DESC");
+        if ($search === '') return $items;
+        return array_values(array_filter($items, fn ($i) =>
+            mb_stripos($i['title'], $search) !== false || mb_stripos($i['description'], $search) !== false));
     }
 
     public static function pending(): array
@@ -33,9 +41,9 @@ final class Item
     public static function create(array $d): int
     {
         return DB::insert(
-            'INSERT INTO items (title, description, price, photo, donor_name, donor_role, donor_class, status, created_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [$d['title'], $d['description'], $d['price'], $d['photo'], $d['donor_name'], $d['donor_role'], $d['donor_class'], 'pending', time()]
+            'INSERT INTO items (title, description, price, category, photo, donor_name, donor_role, donor_class, status, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [$d['title'], $d['description'], $d['price'], $d['category'], $d['photo'], $d['donor_name'], $d['donor_role'], $d['donor_class'], 'pending', time()]
         );
     }
 

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\{App, Controller, Lang};
+use App\Core\{App, Controller, Lang, Upload};
 use App\Models\{Item, Order};
 use App\Services\Telegram;
 
@@ -37,7 +37,14 @@ final class PaymentController extends Controller
                 $this->card($token, Lang::t('last4_error'));
                 return;
             }
-            Telegram::notifyPayment(Order::markAwaiting((int) $order['id'], $last4));
+            // Optional screenshot of the transfer; kept outside public/ so only admins see it.
+            try {
+                $receipt = Upload::image($_FILES['receipt'] ?? null, ROOT . '/storage/receipts', false);
+            } catch (\RuntimeException $e) {
+                $this->card($token, Lang::t('receipt_' . $e->getMessage()));
+                return;
+            }
+            Telegram::notifyPayment(Order::markAwaiting((int) $order['id'], $last4, $receipt));
         }
         $this->redirect("/order/$token");
     }

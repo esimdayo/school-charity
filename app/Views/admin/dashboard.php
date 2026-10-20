@@ -13,7 +13,15 @@ $orderLabel = fn ($s) => t(in_array($s, ['cancelled', 'unpaid'], true) ? "order_
 <?php if ($flash): ?><p class="badge <?= e($flash[0]) ?>"><?= t($flash[1]) ?></p><?php endif ?>
 
 <div class="stats">
-  <div class="card"><span class="muted"><?= t('stat_raised') ?></span><strong><?= money($raised['total']) ?></strong></div>
+  <div class="card">
+    <span class="muted"><?= t('stat_raised') ?></span>
+    <strong><?= money($raised['total']) ?></strong>
+    <?php if ($raisedSince): ?><span class="muted small"><?= t('raised_since', ['date' => fmt_date($raisedSince)]) ?></span><?php endif ?>
+    <form method="post" action="/admin/raised/reset" onsubmit="return confirm(<?= e(json_encode(t('reset_confirm'))) ?>)">
+      <?= Csrf::field() ?>
+      <button class="btn ghost small"><?= t('reset_raised') ?></button>
+    </form>
+  </div>
   <div class="card"><span class="muted"><?= t('stat_check_payments') ?></span><strong><?= count($toCheck) ?></strong></div>
   <div class="card"><span class="muted"><?= t('stat_pending') ?></span><strong><?= count($pending) ?></strong></div>
   <div class="card"><span class="muted"><?= t('stat_pickup') ?></span><strong><?= $toPickUp ?></strong></div>
@@ -37,6 +45,7 @@ $orderLabel = fn ($s) => t(in_array($s, ['cancelled', 'unpaid'], true) ? "order_
             <strong class="price"><?= money($o['amount']) ?></strong>
             <span><?= e($o['title']) ?></span>
             <span class="muted small"><?= e($o['buyer_name']) ?> · <?= e($o['buyer_phone']) ?> · <?= t('payer_card_short', ['last4' => e($o['payer_card'])]) ?> · <?= fmt_date((int) $o['sent_at']) ?></span>
+            <?php if ($o['receipt']): ?><a class="small" href="/admin/receipt/<?= (int) $o['id'] ?>" target="_blank">🧾 <?= t('receipt_view') ?></a><?php endif ?>
           </div>
           <form method="post" class="inline">
             <?= Csrf::field() ?>
@@ -77,6 +86,7 @@ $orderLabel = fn ($s) => t(in_array($s, ['cancelled', 'unpaid'], true) ? "order_
           <div class="item-body">
             <h3><?= e($i['title']) ?></h3>
             <p class="price"><?= money($i['price']) ?></p>
+            <p class="muted small"><?= t('cat_' . $i['category']) ?></p>
             <p class="muted small"><?= e($i['donor_name']) ?> · <?= t('role_' . $i['donor_role']) ?> <?= e($i['donor_class']) ?></p>
             <?php if ($i['description'] !== ''): ?><p class="small"><?= e($i['description']) ?></p><?php endif ?>
             <form method="post" class="inline">

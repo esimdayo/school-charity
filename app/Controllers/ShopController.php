@@ -11,9 +11,14 @@ final class ShopController extends Controller
     public function index(): void
     {
         Order::releaseExpired();
+        $category = in_array($_GET['cat'] ?? '', Item::CATEGORIES, true) ? $_GET['cat'] : '';
+        $search = mb_substr(trim((string) ($_GET['q'] ?? '')), 0, 80);
         $this->view('shop/index', [
             'title' => Lang::t('shop_title'),
-            'items' => Item::available(),
+            'items' => Item::available($category, $search),
+            'anyItems' => $category !== '' || $search !== '' ? (bool) Item::available() : null,
+            'category' => $category,
+            'search' => $search,
             'raised' => Order::totalRaised(),
         ]);
     }

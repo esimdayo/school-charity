@@ -157,3 +157,19 @@ tr:last-child td { border-bottom: 0; }
 .field { display: flex; flex-direction: column; min-width: 0; }
 .hint { font-weight: 400; }
 .tg-connect { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+
+/* Shop search and category filter */
+.search { display: flex; gap: 8px; margin-bottom: 12px; }
+.search input { flex: 1; min-width: 0; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.chip {
+  display: inline-block; padding: 6px 14px; border-radius: 999px; font-size: .9rem;
+  background: var(--surface); border: 1.5px solid var(--border); color: var(--text); text-decoration: none;
+}
+.chip:hover { background: #f1ece4; }
+.chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.stats form { margin-top: 6px; }
+@media (max-width: 720px) {
+  .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; margin-bottom: 14px; }
+  .chip { white-space: nowrap; }
+}

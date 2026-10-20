@@ -22,6 +22,12 @@ so it runs on ordinary shared hosting.
 5. **Pick up**: the buyer's page then shows a 6-letter pickup code. In the charity
    room the teacher types the code on the admin page and presses *Mark as handed over*.
 
+Buyers can search items by name and filter by category (books, electronics,
+school and office supplies, sports, toys, clothing, other). After a card transfer
+they can attach a screenshot of the receipt (optional); admins see it on the admin
+page and in Telegram. The admin page can reset the "raised" total to zero, which
+keeps all orders and only restarts the count.
+
 The site is in **Uzbek, Russian and English**; visitors switch at the top of the page.
 
 ## Requirements

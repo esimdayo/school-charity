@@ -1,5 +1,7 @@
 <?php
 use App\Core\App;
+use App\Models\Item;
+$link = fn (string $cat) => '/?' . http_build_query(array_filter(['cat' => $cat, 'q' => $search]));
 $recipient = (string) App::config('recipient_name', '');
 $who = $recipient !== '' ? '<strong>' . e($recipient) . '</strong>' : t('hero_someone');
 ?>
@@ -16,6 +18,20 @@ $who = $recipient !== '' ? '<strong>' . e($recipient) . '</strong>' : t('hero_so
   </div>
 </section>
 
+<?php if ($items || $anyItems): ?>
+  <form method="get" action="/" class="search">
+    <?php if ($category !== ''): ?><input type="hidden" name="cat" value="<?= e($category) ?>"><?php endif ?>
+    <input type="search" name="q" value="<?= e($search) ?>" placeholder="<?= e(t('search_placeholder')) ?>" aria-label="<?= e(t('search_placeholder')) ?>">
+    <button class="btn"><?= t('search_button') ?></button>
+  </form>
+  <nav class="chips" aria-label="<?= e(t('category')) ?>">
+    <a class="chip<?= $category === '' ? ' active' : '' ?>" href="<?= e($link('')) ?>"><?= t('cat_all') ?></a>
+    <?php foreach (Item::CATEGORIES as $c): ?>
+      <a class="chip<?= $category === $c ? ' active' : '' ?>" href="<?= e($link($c)) ?>"><?= t('cat_' . $c) ?></a>
+    <?php endforeach ?>
+  </nav>
+<?php endif ?>
+
 <?php if ($items): ?>
   <div class="grid">
     <?php foreach ($items as $item): ?>
@@ -24,10 +40,16 @@ $who = $recipient !== '' ? '<strong>' . e($recipient) . '</strong>' : t('hero_so
         <div class="item-body">
           <h3><?= e($item['title']) ?></h3>
           <p class="price"><?= money($item['price']) ?></p>
+          <p class="muted small"><?= t('cat_' . $item['category']) ?></p>
           <p class="muted"><?= t('from', ['name' => e($item['donor_name']) . ($item['donor_class'] !== '' ? ', ' . e($item['donor_class']) : '')]) ?></p>
         </div>
       </a>
     <?php endforeach ?>
+  </div>
+<?php elseif ($anyItems): ?>
+  <div class="empty">
+    <p><?= t('no_results') ?></p>
+    <a class="btn ghost" href="/"><?= t('show_all') ?></a>
   </div>
 <?php else: ?>
   <div class="empty">
@@ -35,3 +57,7 @@ $who = $recipient !== '' ? '<strong>' . e($recipient) . '</strong>' : t('hero_so
     <a class="btn" href="/donate"><?= t('donate_first') ?></a>
   </div>
 <?php endif ?>
+<script>
+  // On phones the category row scrolls sideways: keep the chosen one in view.
+  document.querySelector('.chip.active')?.scrollIntoView({ block: 'nearest', inline: 'center' });
+</script>

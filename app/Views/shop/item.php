@@ -9,6 +9,7 @@ $donor = e($item['donor_name']) . ' (' . t('role_' . $item['donor_role']) . ($it
     <h1><?= e($item['title']) ?></h1>
     <p class="price big"><?= money($item['price']) ?></p>
     <?php if ($item['description'] !== ''): ?><p><?= nl2br(e($item['description'])) ?></p><?php endif ?>
+    <p class="muted"><a class="chip" href="/?cat=<?= e($item['category']) ?>"><?= t('cat_' . $item['category']) ?></a></p>
     <p class="muted"><?= t('donated_by', ['name' => $donor]) ?></p>
 
     <?php if ($item['status'] === 'available'): ?>

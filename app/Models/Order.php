@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Core\{App, Database as DB};
+use App\Core\{App, Database as DB, Setting};
 
 // status: pending (buyer is paying) | awaiting (buyer says they sent the money,
 // a teacher checks) | paid | picked_up | cancelled | unpaid (money never arrived)
@@ -36,9 +36,16 @@ final class Order
                         WHERE o.status = 'awaiting' ORDER BY o.sent_at");
     }
 
+    // Money from paid orders since the admin last pressed "Reset" (or ever).
     public static function totalRaised(): array
     {
-        return DB::one("SELECT COALESCE(SUM(amount), 0) AS total, COUNT(*) AS count FROM orders WHERE status IN ('paid', 'picked_up')");
+        return DB::one("SELECT COALESCE(SUM(amount), 0) AS total, COUNT(*) AS count FROM orders
+                        WHERE status IN ('paid', 'picked_up') AND paid_at > ?", [(int) Setting::get('raised_since', '0')]);
+    }
+
+    public static function resetRaised(): void
+    {
+        Setting::set('raised_since', (string) time());
     }
 
     // Reserves the item and creates the order, or returns null if someone else got it first.
@@ -76,10 +83,10 @@ final class Order
         }
     }
 
-    public static function markAwaiting(int $id, string $payerCard): ?array
+    public static function markAwaiting(int $id, string $payerCard, ?string $receipt = null): ?array
     {
-        DB::run("UPDATE orders SET status = 'awaiting', payer_card = ?, sent_at = ? WHERE id = ? AND status = 'pending'",
-            [$payerCard, time(), $id]);
+        DB::run("UPDATE orders SET status = 'awaiting', payer_card = ?, receipt = ?, sent_at = ? WHERE id = ? AND status = 'pending'",
+            [$payerCard, $receipt, time(), $id]);
         return self::find($id);
     }
 

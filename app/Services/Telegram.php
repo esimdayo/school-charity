@@ -70,6 +70,7 @@ final class Telegram
             '🎁 ' . e($item['title']),
             '👤 ' . e($order['buyer_name']) . ', ' . e($order['buyer_phone']),
             '💳 ' . self::t('payer_card_short', ['last4' => e($order['payer_card'])]),
+            '🧾 ' . self::t($order['receipt'] ? 'tg_receipt_yes' : 'tg_receipt_no'),
             '🕒 ' . fmt_date((int) $order['sent_at'], $lang),
             '',
             $footer ?: self::t('tg_check_bank'),
@@ -86,9 +87,8 @@ final class Telegram
 
     // Sends a message with the item photo (or text if the photo is missing) to
     // every admin and returns [chat_id => message_id].
-    private static function sendToAdmins(array $item, string $text, array $buttons): array
+    private static function sendToAdmins(string $photo, string $text, array $buttons): array
     {
-        $photo = ROOT . '/public/uploads/' . basename($item['photo']);
         $sent = [];
         foreach (self::adminIds() as $chatId) {
             $msg = is_file($photo)
@@ -129,7 +129,11 @@ final class Telegram
     {
         if (!self::enabled()) return;
         $item = Item::find((int) $order['item_id']);
-        foreach (self::sendToAdmins($item, self::caption($order, $item), self::buttons((int) $order['id'])) as $chatId => $messageId) {
+        // Show the buyer's receipt screenshot if they sent one, otherwise the item.
+        $photo = $order['receipt']
+            ? ROOT . '/storage/receipts/' . basename($order['receipt'])
+            : ROOT . '/public/uploads/' . basename($item['photo']);
+        foreach (self::sendToAdmins($photo, self::caption($order, $item), self::buttons((int) $order['id'])) as $chatId => $messageId) {
             DB::run('INSERT INTO telegram_messages (order_id, chat_id, message_id) VALUES (?, ?, ?)',
                 [$order['id'], $chatId, $messageId]);
         }
@@ -145,6 +149,7 @@ final class Telegram
             '',
             '🎁 <b>' . e($item['title']) . '</b>',
             '💰 ' . money($item['price'], $lang),
+            '🏷 ' . self::t('cat_' . $item['category']),
             $item['description'] !== '' ? '📝 ' . e(mb_strimwidth($item['description'], 0, 300, '…')) : null,
             '👤 ' . $donor,
             '🕒 ' . fmt_date((int) $item['created_at'], $lang),
@@ -162,7 +167,8 @@ final class Telegram
             ['text' => '✅ ' . self::t('approve'), 'callback_data' => "approve:$itemId"],
             ['text' => '❌ ' . self::t('reject'), 'callback_data' => "reject:$itemId"],
         ]]];
-        foreach (self::sendToAdmins($item, self::itemCaption($item), $buttons) as $chatId => $messageId) {
+        $photo = ROOT . '/public/uploads/' . basename($item['photo']);
+        foreach (self::sendToAdmins($photo, self::itemCaption($item), $buttons) as $chatId => $messageId) {
             DB::run('INSERT INTO telegram_item_messages (item_id, chat_id, message_id) VALUES (?, ?, ?)',
                 [$itemId, $chatId, $messageId]);
         }

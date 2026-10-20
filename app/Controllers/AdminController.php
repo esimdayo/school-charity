@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\{App, Auth, Controller, Lang};
+use App\Core\{App, Auth, Controller, Lang, Setting};
 use App\Models\{Item, Order};
 use App\Services\Telegram;
 
@@ -40,6 +40,7 @@ final class AdminController extends Controller
             'orders' => $orders,
             'toCheck' => Order::awaiting(),
             'raised' => Order::totalRaised(),
+            'raisedSince' => (int) Setting::get('raised_since', '0'),
             'toPickUp' => count(array_filter($orders, fn ($o) => $o['status'] === 'paid')),
             'payments' => (array) App::config('payments', ['card']),
             'telegram' => Telegram::enabled(),
@@ -111,6 +112,31 @@ final class AdminController extends Controller
         $this->checkCsrf();
         $order = Order::markPickedUp((int) $id);
         $this->redirect('/admin/pickup?code=' . urlencode((string) ($order['pickup_code'] ?? '')));
+    }
+
+    public function resetRaised(): void
+    {
+        $this->requireAdmin();
+        $this->checkCsrf();
+        Order::resetRaised();
+        $_SESSION['flash'] = ['ok', 'raised_reset_done'];
+        $this->redirect('/admin');
+    }
+
+    // Receipt screenshots live in storage/receipts, outside public/, so only
+    // a logged-in admin can open them.
+    public function receipt(string $id): void
+    {
+        $this->requireAdmin();
+        $order = Order::find((int) $id);
+        $file = $order && $order['receipt'] ? ROOT . '/storage/receipts/' . basename($order['receipt']) : '';
+        if (!$file || !is_file($file)) {
+            $this->notFound('order_not_found');
+            return;
+        }
+        header('Content-Type: ' . (new \finfo(FILEINFO_MIME_TYPE))->file($file));
+        header('Cache-Control: private, max-age=3600');
+        readfile($file);
     }
 
     public function connectTelegram(): void

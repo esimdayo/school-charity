@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS items (
   title VARCHAR(80) NOT NULL,
   description TEXT NOT NULL,
   price INT NOT NULL,
+  category VARCHAR(16) NOT NULL DEFAULT 'other',
   photo VARCHAR(64) NOT NULL,
   donor_name VARCHAR(80) NOT NULL,
   donor_role VARCHAR(16) NOT NULL,
@@ -22,6 +23,7 @@ CREATE TABLE IF NOT EXISTS orders (
   token CHAR(32) NOT NULL UNIQUE,
   pickup_code CHAR(6) NULL,
   payer_card CHAR(4) NULL,
+  receipt VARCHAR(64) NULL,
   status VARCHAR(16) NOT NULL DEFAULT 'pending',
   created_at BIGINT NOT NULL,
   sent_at BIGINT NULL,
@@ -42,4 +44,9 @@ CREATE TABLE IF NOT EXISTS telegram_item_messages (
   chat_id VARCHAR(32) NOT NULL,
   message_id BIGINT NOT NULL,
   FOREIGN KEY (item_id) REFERENCES items(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS settings (
+  name VARCHAR(64) PRIMARY KEY,
+  value TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

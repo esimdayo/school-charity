@@ -2,3 +2,4 @@ config.php
 storage/*.db*
 public/uploads/*
 !public/uploads/.htaccess
+storage/receipts/

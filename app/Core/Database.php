@@ -22,7 +22,27 @@ final class Database
             self::$pdo->exec('PRAGMA foreign_keys = ON');
             self::$pdo->exec(file_get_contents(ROOT . '/database/schema.sqlite.sql'));
         }
+        self::upgrade(self::$pdo);
         return self::$pdo;
+    }
+
+    // Adds what newer versions of the site need to a database made by an
+    // older version, so updating with git pull is enough (SQLite and MySQL).
+    private static function upgrade(PDO $pdo): void
+    {
+        $columns = [
+            ['items', 'category', "VARCHAR(16) NOT NULL DEFAULT 'other'"],
+            ['orders', 'receipt', 'VARCHAR(64) NULL'],
+        ];
+        foreach ($columns as [$table, $column, $type]) {
+            try {
+                $pdo->query("SELECT $column FROM $table LIMIT 1");
+            } catch (\PDOException) {
+                $pdo->exec("ALTER TABLE $table ADD COLUMN $column $type");
+            }
+        }
+        $pdo->exec('CREATE TABLE IF NOT EXISTS settings (name VARCHAR(64) PRIMARY KEY, value TEXT NOT NULL)');
+        $pdo->exec('CREATE TABLE IF NOT EXISTS telegram_item_messages (item_id INT NOT NULL, chat_id VARCHAR(32) NOT NULL, message_id BIGINT NOT NULL)');
     }
 
     public static function all(string $sql, array $params = []): array

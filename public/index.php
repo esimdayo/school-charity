@@ -53,6 +53,8 @@ $router->post('/admin/orders/{id}/confirm', [AdminController::class, 'confirmPay
 $router->post('/admin/orders/{id}/unpaid', [AdminController::class, 'rejectPayment']);
 $router->get('/admin/pickup', [AdminController::class, 'pickup']);
 $router->post('/admin/orders/{id}/pickup', [AdminController::class, 'handOver']);
+$router->post('/admin/raised/reset', [AdminController::class, 'resetRaised']);
+$router->get('/admin/receipt/{id}', [AdminController::class, 'receipt']);
 $router->post('/admin/telegram/connect', [AdminController::class, 'connectTelegram']);
 
 $router->post('/telegram/webhook', [TelegramController::class, 'webhook']);

@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS items (
   title TEXT NOT NULL,
   description TEXT NOT NULL DEFAULT '',
   price INTEGER NOT NULL,
+  category TEXT NOT NULL DEFAULT 'other',
   photo TEXT NOT NULL,
   donor_name TEXT NOT NULL,
   donor_role TEXT NOT NULL,
@@ -21,6 +22,7 @@ CREATE TABLE IF NOT EXISTS orders (
   token TEXT NOT NULL UNIQUE,
   pickup_code TEXT,
   payer_card TEXT,
+  receipt TEXT,
   status TEXT NOT NULL DEFAULT 'pending',
   created_at INTEGER NOT NULL,
   sent_at INTEGER,
@@ -38,4 +40,9 @@ CREATE TABLE IF NOT EXISTS telegram_item_messages (
   item_id INTEGER NOT NULL REFERENCES items(id),
   chat_id TEXT NOT NULL,
   message_id INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS settings (
+  name TEXT PRIMARY KEY,
+  value TEXT NOT NULL
 );
