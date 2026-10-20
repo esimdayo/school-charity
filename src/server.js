@@ -7,6 +7,7 @@ const multer = require('multer');
 const db = require('./db');
 const shop = require('./shop');
 const payments = require('./payments');
+const telegram = require('./telegram');
 const { LANGS, translator, pickLang } = require('./i18n');
 const {
   layout, esc, money, date, itemCard, statusLabel, orderLabel, RECIPIENT_NAME, maskedCard,
@@ -406,13 +407,19 @@ app.post('/admin/items/:id/:action(approve|reject)', requireAdmin, (req, res) =>
 // A teacher saw the card transfer arrive (or not) in the bank app.
 app.post('/admin/orders/:id/confirm', requireAdmin, (req, res) => {
   const order = shop.getOrder(Number(req.params.id));
-  if (order?.status === 'awaiting') shop.markPaid(order.id, `card-${order.payer_card}`);
+  if (order?.status === 'awaiting') {
+    shop.markPaid(order.id, `card-${order.payer_card}`);
+    telegram.markHandled(order.id, telegram.WEBSITE);
+  }
   res.redirect('/admin');
 });
 
 app.post('/admin/orders/:id/unpaid', requireAdmin, (req, res) => {
   const order = shop.getOrder(Number(req.params.id));
-  if (order?.status === 'awaiting') shop.cancelOrder(order.id, 'unpaid');
+  if (order?.status === 'awaiting') {
+    shop.cancelOrder(order.id, 'unpaid');
+    telegram.markHandled(order.id, telegram.WEBSITE);
+  }
   res.redirect('/admin');
 });
 
@@ -446,4 +453,5 @@ app.post('/admin/orders/:id/pickup', requireAdmin, (req, res) => {
 app.listen(PORT, () => {
   console.log(`Charity shop running on http://localhost:${PORT}`);
   console.log(`Payment providers: ${payments.enabled.map((p) => p.name).join(', ')}`);
+  telegram.start();
 });

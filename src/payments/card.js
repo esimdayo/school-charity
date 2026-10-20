@@ -3,6 +3,7 @@
 // order on the admin page. No payment company account is needed.
 const express = require('express');
 const shop = require('../shop');
+const telegram = require('../telegram');
 const { layout, esc, money, fullCard, RECIPIENT_NAME } = require('../views');
 
 const RESERVE_MINUTES = Number(process.env.RESERVE_MINUTES || 30);
@@ -66,7 +67,7 @@ router.post('/:token', express.urlencoded({ extended: false }), (req, res) => {
     } else {
       const last4 = String(req.body.last4 || '').trim();
       if (!/^\d{4}$/.test(last4)) return page(req, res.status(400), order, req.t('last4_error'));
-      shop.markAwaiting(order.id, last4);
+      telegram.notifyPayment(shop.markAwaiting(order.id, last4));
     }
   }
   res.redirect(`/order/${order.token}`);

@@ -15,7 +15,8 @@ school charity room with a pickup code.
    Uzum, ...) and press *I've sent the money*, giving the last 4 digits of their card.
    The item is held for 30 minutes while they pay, so two people can't buy it.
 4. **Confirm**: the teacher checks the bank app for the card. On the admin page,
-   under *Check payments*, they press *Money arrived* (or *Not received*).
+   under *Check payments*, or in the Telegram message the bot sends them, they
+   press *Money arrived* (or *Not received*).
 5. **Pick up**: after the payment is confirmed the buyer's page shows a 6-letter
    pickup code. In the charity room the teacher types the code on the admin page,
    checks the photo, and presses *Mark as handed over*.
@@ -80,6 +81,24 @@ automatically, but they pay out to the bank account of a registered business (th
 **Payme Business** (https://business.payme.uz) or **Click** (https://click.uz/en/business),
 you can turn these on as well, e.g. `PAYMENT_PROVIDERS=card,payme`.
 
+### Telegram confirmations
+
+Admins can get a Telegram message for every card payment, with the item photo,
+amount, buyer and the last 4 digits of the card they paid from. Two buttons,
+**Money arrived** and **Not received**, do the same as the admin page. When one
+admin presses a button, the message updates for every admin, so a payment is never
+handled twice.
+
+1. In Telegram, open **@BotFather**, send `/newbot` and follow the steps. Copy the
+   token it gives you into `TELEGRAM_BOT_TOKEN` in `.env`.
+2. Restart the site and send any message to your new bot. It replies with your
+   Telegram ID.
+3. Put that ID in `TELEGRAM_ADMIN_IDS` (several IDs separated by commas) and restart.
+
+The bot asks Telegram for new button presses itself (long polling), so it works
+without HTTPS or any extra setup. Only the IDs in `TELEGRAM_ADMIN_IDS` can press
+the buttons.
+
 ### Payme setup
 
 In the Payme merchant cabinet:
@@ -120,6 +139,7 @@ src/shop.js            order rules: reserve, paid, cancel, picked up
 src/db.js              SQLite database (built into Node, no setup needed)
 src/views.js           shared page layout and language switch
 src/i18n.js            all texts in Uzbek, Russian and English
+src/telegram.js        Telegram bot for payment confirmations
 src/payments/          card, payme, click and test payments
 public/style.css       styles
 ```
