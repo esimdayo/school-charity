@@ -159,7 +159,6 @@ router.post('/', express.json(), (req, res) => {
 
 module.exports = {
   name: 'payme',
-  label: 'Payme',
   router,
   checkoutUrl(order, baseUrl) {
     const params = `m=${MERCHANT_ID};ac.order_id=${order.id};a=${order.amount * 100};c=${baseUrl}/order/${order.token}`;

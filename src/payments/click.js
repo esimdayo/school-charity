@@ -73,7 +73,6 @@ router.post('/complete', (req, res) => {
 
 module.exports = {
   name: 'click',
-  label: 'Click',
   router,
   checkoutUrl(order, baseUrl) {
     const q = new URLSearchParams({

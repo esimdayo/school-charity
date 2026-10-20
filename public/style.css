@@ -31,6 +31,11 @@ img { max-width: 100%; display: block; }
 .top nav { display: flex; align-items: center; gap: 16px; }
 .top nav a:not(.btn) { color: var(--text); text-decoration: none; }
 
+/* Language switch */
+.langbar { display: flex; justify-content: flex-end; gap: 14px; padding: 6px 20px; font-size: .85rem; background: var(--bg); border-bottom: 1px solid var(--border); }
+.langbar a { color: var(--muted); text-decoration: none; }
+.langbar a:hover { color: var(--text); }
+
 main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 48px; }
 footer { text-align: center; color: var(--muted); font-size: .9rem; padding: 24px 16px 40px; }
 
@@ -106,6 +111,18 @@ label.radio input { width: auto; }
   font: 700 2.6rem/1 ui-monospace, "SF Mono", Menlo, monospace; letter-spacing: .18em;
   background: #fdeee9; color: var(--accent-dark); padding: 18px; border-radius: var(--radius); margin: 8px 0 16px;
 }
+/* Card transfer instructions */
+.transfer { display: flex; flex-direction: column; gap: 14px; background: #fdeee9; border-radius: var(--radius); padding: 16px 18px; margin: 12px 0; }
+.transfer > div > div, .transfer > div:not(.transfer-row) { display: flex; flex-direction: column; }
+.transfer-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.cardno { white-space: nowrap; }
+.transfer strong { font-size: 1.15rem; }
+.cardno { font: 700 1.4rem/1.2 ui-monospace, "SF Mono", Menlo, monospace; letter-spacing: .06em; color: var(--accent-dark); }
+.checks { display: flex; flex-direction: column; gap: 10px; }
+.check { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 0; border-top: 1px solid var(--border); }
+.check-info { display: flex; flex-direction: column; flex: 1; min-width: 180px; }
+.center-row { justify-content: center; }
+
 .empty { text-align: center; padding: 48px 0; color: var(--muted); }
 
 .admin-head { display: flex; justify-content: space-between; align-items: center; }
@@ -130,5 +147,9 @@ tr:last-child td { border-bottom: 0; }
   .top nav a:not(.btn) { display: none; }
   .row { grid-template-columns: 1fr; }
   .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .brand { font-size: 1rem; }
+  .top nav .btn.small { padding: 6px 12px; font-size: .85rem; }
+  .cardno { font-size: 1.2rem; letter-spacing: .03em; }
+  .langbar { padding: 6px 16px; }
   .item-body { padding: 10px; }
 }

@@ -66,9 +66,17 @@ function createOrder(itemId, { buyerName, buyerPhone, provider }) {
   }
 }
 
+// Card transfers: the buyer says they sent the money, a teacher then checks
+// the bank app. These orders don't expire; the teacher confirms or rejects.
+function markAwaiting(orderId, payerCard) {
+  db.prepare("UPDATE orders SET status = 'awaiting', payer_card = ?, sent_at = ? WHERE id = ? AND status = 'pending'")
+    .run(payerCard, now(), orderId);
+  return getOrder(orderId);
+}
+
 function markPaid(orderId, providerTx) {
   const order = getOrder(orderId);
-  if (!order || order.status !== 'pending') return order;
+  if (!order || !['pending', 'awaiting'].includes(order.status)) return order;
   db.prepare(`
     UPDATE orders SET status = 'paid', paid_at = ?, pickup_code = ?, provider_tx = ? WHERE id = ?
   `).run(now(), newPickupCode(), providerTx ?? null, orderId);
@@ -78,7 +86,7 @@ function markPaid(orderId, providerTx) {
 
 function cancelOrder(orderId, status = 'cancelled') {
   const order = getOrder(orderId);
-  if (!order || !['pending', 'paid'].includes(order.status)) return order;
+  if (!order || !['pending', 'awaiting', 'paid'].includes(order.status)) return order;
   db.prepare('UPDATE orders SET status = ? WHERE id = ?').run(status, orderId);
   db.prepare("UPDATE items SET status = 'available' WHERE id = ? AND status IN ('reserved', 'sold')")
     .run(order.item_id);
@@ -96,6 +104,6 @@ function totalRaised() {
 }
 
 module.exports = {
-  getItem, getOrder, getOrderByToken, createOrder, markPaid, cancelOrder,
+  getItem, getOrder, getOrderByToken, createOrder, markAwaiting, markPaid, cancelOrder,
   markPickedUp, releaseExpired, totalRaised,
 };

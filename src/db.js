@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS orders (
   provider TEXT NOT NULL,
   token TEXT NOT NULL UNIQUE,          -- secret used in the buyer's order link
   pickup_code TEXT,
-  status TEXT NOT NULL DEFAULT 'pending', -- pending | paid | picked_up | cancelled | refunded
+  status TEXT NOT NULL DEFAULT 'pending', -- pending | awaiting | paid | picked_up | cancelled | unpaid | refunded
   provider_tx TEXT,
   created_at INTEGER NOT NULL,
   paid_at INTEGER,
@@ -50,5 +50,10 @@ CREATE TABLE IF NOT EXISTS payme_transactions (
   reason INTEGER
 );
 `);
+
+// Columns added after the first version.
+const orderColumns = db.prepare('PRAGMA table_info(orders)').all().map((c) => c.name);
+if (!orderColumns.includes('payer_card')) db.exec('ALTER TABLE orders ADD COLUMN payer_card TEXT');
+if (!orderColumns.includes('sent_at')) db.exec('ALTER TABLE orders ADD COLUMN sent_at INTEGER');
 
 module.exports = db;
