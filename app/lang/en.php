@@ -150,11 +150,16 @@ return [
     'tg_check_bank' => 'Check in the bank app that the money arrived, then press a button.',
     'tg_confirmed' => 'Payment confirmed. Pickup code: {code}',
     'tg_rejected' => 'Marked as not received. The item is back on sale.',
+    'tg_new_item' => 'New item to approve',
+    'tg_check_item' => 'Check that the item was brought to the charity room, then press a button.',
+    'tg_item_approved' => 'Approved. The item is now in the shop.',
+    'tg_item_rejected' => 'Rejected.',
+    'tg_item_already' => 'This item was already reviewed.',
     'tg_by' => 'Marked by: {name}',
     'tg_website' => 'on the website',
     'tg_not_admin' => 'You are not an admin of this shop.',
     'tg_already' => 'This payment was already handled.',
-    'tg_hello_admin' => 'Hello! The bot is working. New payments will appear here.',
+    'tg_hello_admin' => 'Hello! The bot is working. New items and payments will appear here.',
     'tg_hello_other' => 'Hello! Your Telegram ID is <code>{id}</code>
 
 To become an admin, add this number to telegram admin_ids in config.php.',

@@ -6,8 +6,8 @@ namespace App\Services;
 use App\Core\{App, Database as DB, Lang};
 use App\Models\{Item, Order};
 
-// Telegram bot for admins: every card payment arrives as a message with the
-// item photo and "Money arrived" / "Not received" buttons. Telegram sends the
+// Telegram bot for admins: every donated item arrives with "Approve" / "Reject"
+// buttons, and every card payment with "Money arrived" / "Not received" buttons. Telegram sends the
 // button presses to /telegram/webhook (connect it once on the admin page).
 final class Telegram
 {
@@ -83,31 +83,101 @@ final class Telegram
         ]]];
     }
 
-    // Called when a buyer presses "I've sent the money".
-    public static function notifyPayment(array $order): void
+    // Sends a message with the item photo (or text if the photo is missing) to
+    // every admin and returns [chat_id => message_id].
+    private static function sendToAdmins(array $item, string $text, array $buttons): array
     {
-        if (!self::enabled()) return;
-        $item = Item::find((int) $order['item_id']);
         $photo = ROOT . '/public/uploads/' . basename($item['photo']);
+        $sent = [];
         foreach (self::adminIds() as $chatId) {
             $msg = is_file($photo)
                 ? self::call('sendPhoto', [
                     'chat_id' => $chatId,
                     'photo' => new \CURLFile($photo),
-                    'caption' => self::caption($order, $item),
+                    'caption' => $text,
                     'parse_mode' => 'HTML',
-                    'reply_markup' => json_encode(self::buttons((int) $order['id'])),
+                    'reply_markup' => json_encode($buttons),
                 ], true)
                 : self::call('sendMessage', [
                     'chat_id' => $chatId,
-                    'text' => self::caption($order, $item),
+                    'text' => $text,
                     'parse_mode' => 'HTML',
-                    'reply_markup' => self::buttons((int) $order['id']),
+                    'reply_markup' => $buttons,
                 ]);
-            if ($msg) {
-                DB::run('INSERT INTO telegram_messages (order_id, chat_id, message_id) VALUES (?, ?, ?)',
-                    [$order['id'], $chatId, $msg['message_id']]);
-            }
+            if ($msg) $sent[$chatId] = $msg['message_id'];
+        }
+        return $sent;
+    }
+
+    // Replaces the buttons in an earlier message with the result text.
+    private static function editMessage(string $chatId, int $messageId, string $text): void
+    {
+        $params = [
+            'chat_id' => $chatId,
+            'message_id' => $messageId,
+            'parse_mode' => 'HTML',
+            'reply_markup' => ['inline_keyboard' => []],
+        ];
+        // Photo messages have a caption; text messages (photo missing) have text.
+        self::call('editMessageCaption', $params + ['caption' => $text])
+            ?? self::call('editMessageText', $params + ['text' => $text]);
+    }
+
+    // Called when a buyer presses "I've sent the money".
+    public static function notifyPayment(array $order): void
+    {
+        if (!self::enabled()) return;
+        $item = Item::find((int) $order['item_id']);
+        foreach (self::sendToAdmins($item, self::caption($order, $item), self::buttons((int) $order['id'])) as $chatId => $messageId) {
+            DB::run('INSERT INTO telegram_messages (order_id, chat_id, message_id) VALUES (?, ?, ?)',
+                [$order['id'], $chatId, $messageId]);
+        }
+    }
+
+    private static function itemCaption(array $item, string $footer = ''): string
+    {
+        $lang = self::lang();
+        $donor = e($item['donor_name']) . ' (' . self::t('role_' . $item['donor_role'])
+            . ($item['donor_class'] !== '' ? ', ' . e($item['donor_class']) : '') . ')';
+        return implode("\n", array_filter([
+            '<b>' . self::t('tg_new_item') . '</b>',
+            '',
+            '🎁 <b>' . e($item['title']) . '</b>',
+            '💰 ' . money($item['price'], $lang),
+            $item['description'] !== '' ? '📝 ' . e(mb_strimwidth($item['description'], 0, 300, '…')) : null,
+            '👤 ' . $donor,
+            '🕒 ' . fmt_date((int) $item['created_at'], $lang),
+            '',
+            $footer ?: self::t('tg_check_item'),
+        ], fn ($line) => $line !== null));
+    }
+
+    // Called when someone donates an item: admins approve or reject it.
+    public static function notifyDonation(int $itemId): void
+    {
+        if (!self::enabled()) return;
+        $item = Item::find($itemId);
+        $buttons = ['inline_keyboard' => [[
+            ['text' => '✅ ' . self::t('approve'), 'callback_data' => "approve:$itemId"],
+            ['text' => '❌ ' . self::t('reject'), 'callback_data' => "reject:$itemId"],
+        ]]];
+        foreach (self::sendToAdmins($item, self::itemCaption($item), $buttons) as $chatId => $messageId) {
+            DB::run('INSERT INTO telegram_item_messages (item_id, chat_id, message_id) VALUES (?, ?, ?)',
+                [$itemId, $chatId, $messageId]);
+        }
+    }
+
+    // After an item is approved or rejected, update every admin's message.
+    public static function markItemHandled(int $itemId, string $byName = ''): void
+    {
+        if (!self::enabled()) return;
+        $item = Item::find($itemId);
+        $result = $item['status'] === 'rejected'
+            ? '❌ <b>' . self::t('tg_item_rejected') . '</b>'
+            : '✅ <b>' . self::t('tg_item_approved') . '</b>';
+        $footer = $byName !== '' ? $result . "\n" . self::t('tg_by', ['name' => e($byName)]) : $result;
+        foreach (DB::all('SELECT * FROM telegram_item_messages WHERE item_id = ?', [$itemId]) as $row) {
+            self::editMessage($row['chat_id'], (int) $row['message_id'], self::itemCaption($item, $footer));
         }
     }
 
@@ -123,15 +193,7 @@ final class Telegram
             : '❌ <b>' . self::t('tg_rejected') . '</b>';
         $footer = $byName !== '' ? $result . "\n" . self::t('tg_by', ['name' => e($byName)]) : $result;
         foreach (DB::all('SELECT * FROM telegram_messages WHERE order_id = ?', [$orderId]) as $row) {
-            $params = [
-                'chat_id' => $row['chat_id'],
-                'message_id' => (int) $row['message_id'],
-                'parse_mode' => 'HTML',
-                'reply_markup' => ['inline_keyboard' => []],
-            ];
-            // Photo messages have a caption; text messages (photo missing) have text.
-            self::call('editMessageCaption', $params + ['caption' => self::caption($order, $item, $footer)])
-                ?? self::call('editMessageText', $params + ['text' => self::caption($order, $item, $footer)]);
+            self::editMessage($row['chat_id'], (int) $row['message_id'], self::caption($order, $item, $footer));
         }
     }
 
@@ -164,6 +226,25 @@ final class Telegram
             return;
         }
         [$action, $id] = array_pad(explode(':', (string) ($cb['data'] ?? '')), 2, '');
+        $name = trim(($cb['from']['first_name'] ?? '') . ' ' . ($cb['from']['last_name'] ?? ''));
+
+        if ($action === 'approve' || $action === 'reject') {
+            $item = Item::find((int) $id);
+            if (!$item) {
+                $answer(self::t('order_not_found'));
+                return;
+            }
+            if ($item['status'] !== 'pending') {
+                $answer(self::t('tg_item_already'));
+                self::markItemHandled((int) $item['id']);
+                return;
+            }
+            Item::setReview((int) $item['id'], $action === 'approve');
+            $answer($action === 'approve' ? '✅' : '❌');
+            self::markItemHandled((int) $item['id'], $name);
+            return;
+        }
+
         $order = Order::find((int) $id);
         if (!$order) {
             $answer(self::t('order_not_found'));
@@ -178,7 +259,6 @@ final class Telegram
         elseif ($action === 'unpaid') Order::cancel((int) $order['id'], 'unpaid');
         else return;
         $answer($action === 'confirm' ? '✅' : '❌');
-        $name = trim(($cb['from']['first_name'] ?? '') . ' ' . ($cb['from']['last_name'] ?? ''));
         self::markHandled((int) $order['id'], $name);
     }
 

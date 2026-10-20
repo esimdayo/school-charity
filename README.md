@@ -69,10 +69,14 @@ location ~ \.php$ { deny all; }
 
 ## Telegram confirmations
 
-Admins can get a Telegram message for every card payment, with the item photo,
-amount, buyer and the last 4 digits of their card, plus **Money arrived** and
-**Not received** buttons. When one admin presses a button, the message updates for
-every admin, so a payment is never handled twice.
+Admins can get Telegram messages with buttons:
+- every donated item, with its photo, price and donor, plus **Approve** and
+  **Reject** buttons;
+- every card payment, with the item photo, amount, buyer and the last 4 digits of
+  their card, plus **Money arrived** and **Not received** buttons.
+
+When one admin presses a button (or handles it on the admin page), the message
+updates for every admin, so nothing is handled twice.
 
 1. In Telegram, open **@BotFather**, send `/newbot` and follow the steps. Put the
    token in `telegram.bot_token` in `config.php`.

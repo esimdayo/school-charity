@@ -33,7 +33,8 @@ return [
     'timezone' => 'Asia/Tashkent',
     'default_lang' => 'uz', // uz, ru or en
 
-    // Telegram bot (optional): admins get every card payment in Telegram with
+    // Telegram bot (optional): admins get every donated item in Telegram with
+    // "Approve" / "Reject" buttons, and every card payment with
     // "Money arrived" / "Not received" buttons. See README.
     'telegram' => [
         'bot_token' => '',

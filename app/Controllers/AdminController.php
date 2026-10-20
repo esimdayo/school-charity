@@ -51,7 +51,9 @@ final class AdminController extends Controller
     {
         $this->requireAdmin();
         $this->checkCsrf();
+        $wasPending = (Item::find((int) $id)['status'] ?? '') === 'pending';
         Item::setReview((int) $id, true);
+        if ($wasPending) Telegram::markItemHandled((int) $id, Telegram::websiteName());
         $this->redirect('/admin');
     }
 
@@ -59,7 +61,9 @@ final class AdminController extends Controller
     {
         $this->requireAdmin();
         $this->checkCsrf();
+        $wasPending = (Item::find((int) $id)['status'] ?? '') === 'pending';
         Item::setReview((int) $id, false);
+        if ($wasPending) Telegram::markItemHandled((int) $id, Telegram::websiteName());
         $this->redirect('/admin');
     }
 

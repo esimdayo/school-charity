@@ -33,3 +33,9 @@ CREATE TABLE IF NOT EXISTS telegram_messages (
   chat_id TEXT NOT NULL,
   message_id INTEGER NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS telegram_item_messages (
+  item_id INTEGER NOT NULL REFERENCES items(id),
+  chat_id TEXT NOT NULL,
+  message_id INTEGER NOT NULL
+);

@@ -150,11 +150,16 @@ return [
     'tg_check_bank' => 'Bank ilovasida pul kelganini tekshiring va tugmani bosing.',
     'tg_confirmed' => 'To\'lov tasdiqlandi. Olish kodi: {code}',
     'tg_rejected' => 'Pul kelmadi deb belgilandi. Buyum yana sotuvda.',
+    'tg_new_item' => 'Yangi buyum: tasdiqlang',
+    'tg_check_item' => 'Buyum xayriya xonasiga olib kelinganini tekshiring va tugmani bosing.',
+    'tg_item_approved' => 'Tasdiqlandi. Buyum do\'konda ko\'rinadi.',
+    'tg_item_rejected' => 'Rad etildi.',
+    'tg_item_already' => 'Bu buyum allaqachon ko\'rib chiqilgan.',
     'tg_by' => 'Kim belgiladi: {name}',
     'tg_website' => 'sayt orqali',
     'tg_not_admin' => 'Siz bu do\'konning admini emassiz.',
     'tg_already' => 'Bu to\'lov allaqachon ko\'rib chiqilgan.',
-    'tg_hello_admin' => 'Salom! Bot ishlayapti. Yangi to\'lovlar haqida shu yerga xabar keladi.',
+    'tg_hello_admin' => 'Salom! Bot ishlayapti. Yangi buyumlar va to\'lovlar haqida shu yerga xabar keladi.',
     'tg_hello_other' => 'Salom! Sizning Telegram ID raqamingiz: <code>{id}</code>
 
 Admin bo\'lish uchun bu raqamni config.php dagi telegram admin_ids ga qo\'shing.',

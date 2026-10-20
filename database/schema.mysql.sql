@@ -36,3 +36,10 @@ CREATE TABLE IF NOT EXISTS telegram_messages (
   message_id BIGINT NOT NULL,
   FOREIGN KEY (order_id) REFERENCES orders(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS telegram_item_messages (
+  item_id INT NOT NULL,
+  chat_id VARCHAR(32) NOT NULL,
+  message_id BIGINT NOT NULL,
+  FOREIGN KEY (item_id) REFERENCES items(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

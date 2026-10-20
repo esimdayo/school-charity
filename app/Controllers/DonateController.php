@@ -5,6 +5,7 @@ namespace App\Controllers;
 
 use App\Core\{Controller, Lang};
 use App\Models\Item;
+use App\Services\Telegram;
 
 final class DonateController extends Controller
 {
@@ -40,7 +41,7 @@ final class DonateController extends Controller
         $photo = bin2hex(random_bytes(12)) . '.' . self::TYPES[$type];
         if (!move_uploaded_file($file['tmp_name'], ROOT . '/public/uploads/' . $photo)) return $fail('photo_failed');
 
-        Item::create([
+        $id = Item::create([
             'title' => $title,
             'description' => $this->input('description', 1000),
             'price' => $price,
@@ -49,6 +50,7 @@ final class DonateController extends Controller
             'donor_role' => $role,
             'donor_class' => $this->input('donor_class', 20),
         ]);
+        Telegram::notifyDonation($id);
         $this->view('donate/thanks', ['title' => Lang::t('donate_title'), 'donor' => $donor, 'itemTitle' => $title]);
     }
 }
