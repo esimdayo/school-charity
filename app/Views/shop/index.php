@@ -1,14 +1,11 @@
 <?php
-use App\Core\App;
 use App\Models\Item;
 $link = fn (string $cat) => '/?' . http_build_query(array_filter(['cat' => $cat, 'q' => $search]));
-$recipient = (string) App::config('recipient_name', '');
-$who = $recipient !== '' ? '<strong>' . e($recipient) . '</strong>' : t('hero_someone');
 ?>
 <section class="hero">
   <div>
     <h1><?= t('hero_title') ?></h1>
-    <p><?= t('hero_text', ['name' => $who]) ?></p>
+    <p><?= t('hero_text') ?></p>
     <p class="muted"><?= t('hero_pickup') ?></p>
   </div>
   <div class="raised">

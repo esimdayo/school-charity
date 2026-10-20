@@ -1,7 +1,6 @@
 <?php
 use App\Core\{App, Lang};
 $siteName = (string) App::config('site_name', 'School Charity Shop');
-$recipient = (string) App::config('recipient_name', '');
 $back = urlencode($_SERVER['REQUEST_URI'] ?? '/');
 ?>
 <!doctype html>
@@ -33,7 +32,6 @@ $back = urlencode($_SERVER['REQUEST_URI'] ?? '/');
 <main><?= $content ?></main>
 <footer>
   <?= t('footer') ?>
-  <?php if ($recipient): ?><?= t('footer_recipient', ['name' => e($recipient) . ' ' . e(masked_card())]) ?><?php endif ?>
 </footer>
 </body>
 </html>
