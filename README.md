@@ -93,6 +93,10 @@ script instead, in a window you keep open:
 php bin/telegram-bot.php
 ```
 
+On Windows with Laragon you can double-click `telegram-bot.bat` instead. It also
+restarts the bot if it stops; put a shortcut to it in the Startup folder
+(Win + R, `shell:startup`) to start it with Windows.
+
 It fetches button presses and messages from Telegram itself, so no public address
 is needed. Use either the script or **Connect Telegram bot**, not both.
 
