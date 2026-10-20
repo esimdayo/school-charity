@@ -48,6 +48,7 @@ while (true) {
         sleep(5); // no internet for a moment; try again
         continue;
     }
+    App::boot(); // re-read config.php, so new admin_ids work without a restart
     foreach ($updates as $update) {
         $offset = $update['update_id'] + 1;
         try {
