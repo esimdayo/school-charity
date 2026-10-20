@@ -86,6 +86,16 @@ updates for every admin, so nothing is handled twice.
 
 Only the IDs in `admin_ids` can press the buttons.
 
+**Site only on your own PC (no https address)?** Skip step 2 and run the bot
+script instead, in a window you keep open:
+
+```bash
+php bin/telegram-bot.php
+```
+
+It fetches button presses and messages from Telegram itself, so no public address
+is needed. Use either the script or **Connect Telegram bot**, not both.
+
 ## Code layout (MVC)
 
 ```

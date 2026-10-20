@@ -17,6 +17,7 @@ final class App
         }
         self::$config = require $file;
         date_default_timezone_set(self::config('timezone', 'Asia/Tashkent'));
+        if (PHP_SAPI === 'cli') return; // bin/telegram-bot.php: no session or headers
 
         header('X-Content-Type-Options: nosniff');
         header('X-Frame-Options: DENY');

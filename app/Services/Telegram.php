@@ -37,7 +37,7 @@ final class Telegram
         return hash('sha256', 'webhook:' . App::config('telegram.bot_token', ''));
     }
 
-    public static function call(string $method, array $params, bool $multipart = false): ?array
+    public static function call(string $method, array $params, bool $multipart = false, int $timeout = 10): ?array
     {
         $url = rtrim((string) App::config('telegram.api_url', 'https://api.telegram.org'), '/')
             . '/bot' . App::config('telegram.bot_token') . '/' . $method;
@@ -45,9 +45,9 @@ final class Telegram
         curl_setopt_array($ch, [
             CURLOPT_POST => true,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 10,
+            CURLOPT_TIMEOUT => $timeout,
             CURLOPT_HTTPHEADER => $multipart ? [] : ['Content-Type: application/json'],
-            CURLOPT_POSTFIELDS => $multipart ? $params : json_encode($params),
+            CURLOPT_POSTFIELDS => $multipart ? $params : json_encode($params ?: new \stdClass()),
         ]);
         $body = curl_exec($ch);
         curl_close($ch);

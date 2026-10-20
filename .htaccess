@@ -1,6 +1,6 @@
 # For hosting where the site's folder (e.g. public_html) can't point at public/:
 # put the whole project there and this sends visitors into public/.
 RewriteEngine On
-RewriteRule ^(app|database|storage)(/|$) - [F,L]
+RewriteRule ^(app|bin|database|storage)(/|$) - [F,L]
 RewriteRule ^config(\.example)?\.php$ - [F,L]
 RewriteRule ^(.*)$ public/$1 [L]
