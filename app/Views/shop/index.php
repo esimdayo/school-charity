@@ -2,18 +2,31 @@
 use App\Models\Item;
 $link = fn (string $cat) => '/?' . http_build_query(array_filter(['cat' => $cat, 'q' => $search]));
 ?>
-<section class="hero">
+<section class="hero<?= $goal > 0 ? ' hero-solo' : '' ?>">
   <div>
     <h1><?= t('hero_title') ?></h1>
     <p><?= t('hero_text') ?></p>
     <p class="muted"><?= t('hero_pickup') ?></p>
   </div>
+  <?php if ($goal <= 0): ?>
   <div class="raised">
     <span class="muted"><?= t('raised') ?></span>
     <strong><?= money($raised['total']) ?></strong>
     <span class="muted"><?= t('items_sold', ['n' => (int) $raised['count']]) ?></span>
   </div>
+  <?php endif ?>
 </section>
+
+<?php if ($goal > 0): ?>
+  <section class="goal">
+    <?php require ROOT . '/app/Views/partials/goal.php' ?>
+    <?php if ($hasStory): ?>
+      <div class="goal-foot"><a class="btn" href="/story"><?= t('story_button') ?></a></div>
+    <?php endif ?>
+  </section>
+<?php elseif ($hasStory): ?>
+  <p class="center"><a class="btn" href="/story"><?= t('story_button') ?></a></p>
+<?php endif ?>
 
 <?php if ($items || $anyItems): ?>
   <form method="get" action="/" class="search">

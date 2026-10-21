@@ -10,6 +10,10 @@ $back = urlencode($_SERVER['REQUEST_URI'] ?? '/');
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($title) ?> · <?= e($siteName) ?></title>
 <link rel="stylesheet" href="/style.css">
+<script>
+  // Apply the theme the visitor picked before the page draws, so it doesn't flash.
+  try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
 </head>
 <body>
 <div class="langbar">
@@ -20,6 +24,7 @@ $back = urlencode($_SERVER['REQUEST_URI'] ?? '/');
       <a href="/lang/<?= $code ?>?back=<?= $back ?>" lang="<?= $code ?>"><?= $name ?></a>
     <?php endif ?>
   <?php endforeach ?>
+  <button type="button" class="theme-toggle" id="theme-toggle" data-dark="<?= e(t('theme_dark')) ?>" data-light="<?= e(t('theme_light')) ?>"></button>
 </div>
 <header class="top">
   <a class="brand" href="/"><span class="heart">♥</span> <?= e($siteName) ?></a>
@@ -33,5 +38,18 @@ $back = urlencode($_SERVER['REQUEST_URI'] ?? '/');
 <footer>
   <?= t('footer') ?>
 </footer>
+<script>
+  (() => {
+    const root = document.documentElement, btn = document.getElementById('theme-toggle');
+    const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    const label = () => { btn.textContent = isDark() ? btn.dataset.light : btn.dataset.dark; };
+    btn.addEventListener('click', () => {
+      root.dataset.theme = isDark() ? 'light' : 'dark';
+      try { localStorage.setItem('theme', root.dataset.theme); } catch (e) {}
+      label();
+    });
+    label();
+  })();
+</script>
 </body>
 </html>

@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\{App, Auth, Controller, Lang, Setting};
-use App\Models\{Item, Order};
+use App\Core\{App, Auth, Controller, Lang, Setting, Upload};
+use App\Models\{Item, Order, Stats};
 use App\Services\Telegram;
 
 final class AdminController extends Controller
@@ -112,6 +112,60 @@ final class AdminController extends Controller
         $this->checkCsrf();
         $order = Order::markPickedUp((int) $id);
         $this->redirect('/admin/pickup?code=' . urlencode((string) ($order['pickup_code'] ?? '')));
+    }
+
+    public function stats(): void
+    {
+        $this->requireAdmin();
+        $this->view('admin/stats', [
+            'title' => Lang::t('stats_title'),
+            'totals' => Stats::totals(),
+            'categories' => Stats::byCategory(),
+            'donors' => Stats::topDonors(),
+            'weeks' => Stats::weekly(),
+        ]);
+    }
+
+    // Fundraising goal and the story of the person in need.
+    public function settings(string $error = ''): void
+    {
+        $this->requireAdmin();
+        $this->view('admin/settings', [
+            'title' => Lang::t('settings_title'),
+            'goal' => (int) Setting::get('goal_amount', '0'),
+            'person' => StoryController::person(),
+            'storyTitle' => Setting::get('story_title'),
+            'storyText' => Setting::get('story_text'),
+            'storyPhoto' => Setting::get('story_photo'),
+            'error' => $error,
+            'flash' => $this->takeFlash(),
+        ], $error ? 400 : 200);
+    }
+
+    public function saveSettings(): void
+    {
+        $this->requireAdmin();
+        $this->checkCsrf();
+        try {
+            $photo = Upload::image($_FILES['story_photo'] ?? null, ROOT . '/public/uploads', false);
+        } catch (\RuntimeException $e) {
+            $this->settings(Lang::t($e->getMessage()));
+            return;
+        }
+        $goal = max(0, min(10_000_000_000, (int) round((float) ($_POST['goal_amount'] ?? 0))));
+        Setting::set('goal_amount', (string) $goal);
+        $condition = (string) ($_POST['person_condition'] ?? '');
+        Setting::set('person_name', $this->input('person_name', 120));
+        Setting::set('person_age', (string) max(0, min(120, (int) ($_POST['person_age'] ?? 0))));
+        Setting::set('person_condition', in_array($condition, StoryController::CONDITIONS, true) ? $condition : '');
+        Setting::set('person_health', $this->input('person_health', 300));
+        Setting::set('person_need', $this->input('person_need', 300));
+        Setting::set('story_title', $this->input('story_title', 120));
+        Setting::set('story_text', $this->input('story_text', 10000));
+        if ($photo) Setting::set('story_photo', $photo);
+        elseif (isset($_POST['remove_photo'])) Setting::set('story_photo', '');
+        $_SESSION['flash'] = ['ok', 'settings_saved'];
+        $this->redirect('/admin/settings');
     }
 
     public function resetRaised(): void

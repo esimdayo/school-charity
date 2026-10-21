@@ -42,3 +42,9 @@ function photo_url(string $photo): string
 {
     return '/uploads/' . rawurlencode(basename($photo));
 }
+
+// "13.10 – 19.10" for the week that starts on $monday.
+function fmt_week(int $monday): string
+{
+    return date('d.m', $monday) . ' – ' . date('d.m', $monday + 6 * 86400);
+}

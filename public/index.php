@@ -21,7 +21,7 @@ require ROOT . '/app/Core/helpers.php';
 
 use App\Core\App;
 use App\Core\Router;
-use App\Controllers\{ShopController, DonateController, PaymentController, OrderController, AdminController, TelegramController, LangController};
+use App\Controllers\{ShopController, DonateController, PaymentController, OrderController, AdminController, TelegramController, LangController, StoryController};
 
 App::boot();
 
@@ -41,6 +41,7 @@ $router->post('/pay/test/{token}', [PaymentController::class, 'testSubmit']);
 
 $router->get('/order/{token}', [OrderController::class, 'show']);
 
+$router->get('/story', [StoryController::class, 'show']);
 $router->get('/lang/{lang}', [LangController::class, 'switch']);
 
 $router->get('/admin/login', [AdminController::class, 'loginForm']);
@@ -53,6 +54,9 @@ $router->post('/admin/orders/{id}/confirm', [AdminController::class, 'confirmPay
 $router->post('/admin/orders/{id}/unpaid', [AdminController::class, 'rejectPayment']);
 $router->get('/admin/pickup', [AdminController::class, 'pickup']);
 $router->post('/admin/orders/{id}/pickup', [AdminController::class, 'handOver']);
+$router->get('/admin/stats', [AdminController::class, 'stats']);
+$router->get('/admin/settings', [AdminController::class, 'settings']);
+$router->post('/admin/settings', [AdminController::class, 'saveSettings']);
 $router->post('/admin/raised/reset', [AdminController::class, 'resetRaised']);
 $router->get('/admin/receipt/{id}', [AdminController::class, 'receipt']);
 $router->post('/admin/telegram/connect', [AdminController::class, 'connectTelegram']);

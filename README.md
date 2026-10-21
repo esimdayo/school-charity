@@ -28,6 +28,11 @@ they can attach a screenshot of the receipt (optional); admins see it on the adm
 page and in Telegram. The admin page can reset the "raised" total to zero, which
 keeps all orders and only restarts the count.
 
+On the admin **Settings** page you set a fundraising goal (a progress bar on the
+main page) and fill in the page about the person in need: name, age, condition,
+health problem and their story. **Statistics** shows money raised per week, sales by
+category and the top donors. Visitors can switch to dark mode at the top of the page.
+
 The site is in **Uzbek, Russian and English**; visitors switch at the top of the page.
 
 ## Requirements

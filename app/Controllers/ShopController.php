@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\{App, Controller, Lang};
+use App\Core\{App, Controller, Lang, Setting};
 use App\Models\{Item, Order};
 
 final class ShopController extends Controller
@@ -20,6 +20,8 @@ final class ShopController extends Controller
             'category' => $category,
             'search' => $search,
             'raised' => Order::totalRaised(),
+            'goal' => (int) Setting::get('goal_amount', '0'),
+            'hasStory' => StoryController::exists(),
         ]);
     }
 

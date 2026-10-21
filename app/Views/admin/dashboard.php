@@ -6,7 +6,11 @@ $orderLabel = fn ($s) => t(in_array($s, ['cancelled', 'unpaid'], true) ? "order_
 ?>
 <div class="admin-head">
   <h1><?= t('nav_admin') ?></h1>
-  <form method="post" action="/admin/logout"><?= Csrf::field() ?><button class="btn ghost small"><?= t('log_out') ?></button></form>
+  <div class="admin-links">
+    <a class="btn ghost small" href="/admin/stats"><?= t('stats_title') ?></a>
+    <a class="btn ghost small" href="/admin/settings"><?= t('settings_title') ?></a>
+    <form method="post" action="/admin/logout"><?= Csrf::field() ?><button class="btn ghost small"><?= t('log_out') ?></button></form>
+  </div>
 </div>
 
 <?php if (in_array('test', $payments, true)): ?><p class="badge warn"><?= t('test_warning') ?></p><?php endif ?>
