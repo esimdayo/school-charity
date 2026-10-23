@@ -34,7 +34,16 @@ final class Database
             ['items', 'category', "VARCHAR(16) NOT NULL DEFAULT 'other'"],
             ['orders', 'receipt', 'VARCHAR(64) NULL'],
             ['orders', 'user_id', 'INT NULL'],
+            ['items', 'reject_reason', "VARCHAR(500) NOT NULL DEFAULT ''"],
+            ['users', 'first_name', "VARCHAR(40) NOT NULL DEFAULT ''"],
+            ['users', 'last_name', "VARCHAR(40) NOT NULL DEFAULT ''"],
+            ['users', 'role', "VARCHAR(16) NOT NULL DEFAULT ''"],
+            ['users', 'class_name', "VARCHAR(20) NOT NULL DEFAULT ''"],
         ];
+        $pdo->exec('CREATE TABLE IF NOT EXISTS users (id ' . self::autoId($pdo) . ', telegram_id VARCHAR(32) NOT NULL UNIQUE, name VARCHAR(120) NOT NULL, username VARCHAR(64) NOT NULL DEFAULT \'\', created_at BIGINT NOT NULL)');
+        $pdo->exec('CREATE TABLE IF NOT EXISTS login_tokens (token VARCHAR(64) PRIMARY KEY, user_id INT NULL, created_at BIGINT NOT NULL)');
+        $pdo->exec('CREATE TABLE IF NOT EXISTS settings (name VARCHAR(64) PRIMARY KEY, value TEXT NOT NULL)');
+        $pdo->exec('CREATE TABLE IF NOT EXISTS telegram_item_messages (item_id INT NOT NULL, chat_id VARCHAR(32) NOT NULL, message_id BIGINT NOT NULL)');
         foreach ($columns as [$table, $column, $type]) {
             try {
                 $pdo->query("SELECT $column FROM $table LIMIT 1");
@@ -42,10 +51,6 @@ final class Database
                 $pdo->exec("ALTER TABLE $table ADD COLUMN $column $type");
             }
         }
-        $pdo->exec('CREATE TABLE IF NOT EXISTS users (id ' . self::autoId($pdo) . ', telegram_id VARCHAR(32) NOT NULL UNIQUE, name VARCHAR(120) NOT NULL, username VARCHAR(64) NOT NULL DEFAULT \'\', created_at BIGINT NOT NULL)');
-        $pdo->exec('CREATE TABLE IF NOT EXISTS login_tokens (token VARCHAR(64) PRIMARY KEY, user_id INT NULL, created_at BIGINT NOT NULL)');
-        $pdo->exec('CREATE TABLE IF NOT EXISTS settings (name VARCHAR(64) PRIMARY KEY, value TEXT NOT NULL)');
-        $pdo->exec('CREATE TABLE IF NOT EXISTS telegram_item_messages (item_id INT NOT NULL, chat_id VARCHAR(32) NOT NULL, message_id BIGINT NOT NULL)');
     }
 
     private static function autoId(PDO $pdo): string

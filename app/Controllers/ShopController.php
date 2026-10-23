@@ -48,6 +48,7 @@ final class ShopController extends Controller
         // Buyers log in with Telegram, so the bot can send them their pickup code.
         $user = Buyer::current();
         if (!$user) $this->redirect('/login?back=' . urlencode('/item/' . (int) $id));
+        if (!User::profileDone($user)) $this->redirect('/profile?back=' . urlencode('/item/' . (int) $id));
         $provider = (string) ($_POST['provider'] ?? '');
         if (!in_array($provider, (array) App::config('payments', ['card']), true)) {
             $this->view('message', [
@@ -58,7 +59,8 @@ final class ShopController extends Controller
             return;
         }
         $contact = $user['username'] !== '' ? '@' . $user['username'] : 'Telegram';
-        $order = Order::create((int) $id, $user['name'], $contact, $provider, (int) $user['id']);
+        $name = User::realName($user) . ($user['class_name'] !== '' ? ', ' . $user['class_name'] : '');
+        $order = Order::create((int) $id, $name, $contact, $provider, (int) $user['id']);
         if (!$order) {
             $this->view('message', [
                 'title' => Lang::t('not_available'),

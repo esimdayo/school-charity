@@ -32,7 +32,25 @@ final class User
 
     public static function displayName(array $user): string
     {
-        return $user['name'] . ($user['username'] !== '' ? ' (@' . $user['username'] . ')' : '');
+        return self::realName($user) . ($user['username'] !== '' ? ' (@' . $user['username'] . ')' : '');
+    }
+
+    // The name from the profile, or the Telegram name until the profile is filled in.
+    public static function realName(array $user): string
+    {
+        return self::profileDone($user) ? $user['first_name'] . ' ' . $user['last_name'] : $user['name'];
+    }
+
+    // Right after the first login the profile is empty; the site asks for it before buying.
+    public static function profileDone(array $user): bool
+    {
+        return $user['first_name'] !== '' && $user['last_name'] !== '' && $user['role'] !== '';
+    }
+
+    public static function saveProfile(int $id, string $first, string $last, string $role, string $class): void
+    {
+        DB::run('UPDATE users SET first_name = ?, last_name = ?, role = ?, class_name = ? WHERE id = ?',
+            [$first, $last, $role, $class, $id]);
     }
 
     // Login links: the site makes a token, the buyer opens t.me/bot?start=login_TOKEN,

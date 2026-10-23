@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS items (
   donor_role TEXT NOT NULL,
   donor_class TEXT NOT NULL DEFAULT '',
   status TEXT NOT NULL DEFAULT 'pending',
+  reject_reason TEXT NOT NULL DEFAULT '',
   created_at INTEGER NOT NULL
 );
 
@@ -53,6 +54,10 @@ CREATE TABLE IF NOT EXISTS users (
   telegram_id TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL,
   username TEXT NOT NULL DEFAULT '',
+  first_name TEXT NOT NULL DEFAULT '',
+  last_name TEXT NOT NULL DEFAULT '',
+  role TEXT NOT NULL DEFAULT '',
+  class_name TEXT NOT NULL DEFAULT '',
   created_at INTEGER NOT NULL
 );
 

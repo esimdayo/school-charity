@@ -7,7 +7,7 @@ $label = fn ($s) => t(in_array($s, ['cancelled', 'unpaid'], true) ? "order_{$s}_
   <h1><?= t('my_orders_title') ?></h1>
   <form method="post" action="/logout"><?= Csrf::field() ?><button class="btn ghost small"><?= t('log_out') ?></button></form>
 </div>
-<p class="muted"><?= t('logged_in_as', ['name' => e(User::displayName($user))]) ?></p>
+<p class="muted"><?= t('logged_in_as', ['name' => e(User::displayName($user))]) ?> <a href="/profile"><?= t('nav_profile') ?></a></p>
 <?php if ($orders): ?>
   <div class="checks card">
     <?php foreach ($orders as $o): ?>

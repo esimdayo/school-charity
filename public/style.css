@@ -286,3 +286,13 @@ tr:last-child td { border-bottom: 0; }
   .top nav a.nav-keep { display: inline; font-size: .9rem; }
   .top { flex-wrap: wrap; row-gap: 8px; }
 }
+
+/* Reject box: the admin writes why before rejecting an item */
+.reject-box { display: inline-block; vertical-align: top; }
+.reject-box > summary { list-style: none; cursor: pointer; }
+.reject-box > summary::-webkit-details-marker { display: none; }
+.reject-box[open] { display: block; margin-top: 8px; }
+.reject-box form { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; min-width: 200px; }
+.reject-box textarea { width: 100%; font: inherit; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: inherit; }
+.btn.danger { background: #c0392b; }
+.btn.danger:hover { background: #a93226; }

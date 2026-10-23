@@ -47,11 +47,12 @@ final class Item
         );
     }
 
-    public static function setReview(int $id, bool $approved): void
+    // $reason is required when rejecting: why the admin didn't accept the item.
+    public static function setReview(int $id, bool $approved, string $reason = ''): void
     {
         DB::run(
-            "UPDATE items SET status = ? WHERE id = ? AND status IN ('pending', 'available', 'rejected')",
-            [$approved ? 'available' : 'rejected', $id]
+            "UPDATE items SET status = ?, reject_reason = ? WHERE id = ? AND status IN ('pending', 'available', 'rejected')",
+            [$approved ? 'available' : 'rejected', $approved ? '' : $reason, $id]
         );
     }
 }

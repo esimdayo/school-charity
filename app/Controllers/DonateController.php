@@ -3,15 +3,19 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\{Controller, Lang, Upload};
-use App\Models\Item;
+use App\Core\{Buyer, Controller, Lang, Upload};
+use App\Models\{Item, User};
 use App\Services\Telegram;
 
 final class DonateController extends Controller
 {
     public function form(): void
     {
-        $this->view('donate/form', ['title' => Lang::t('donate_title'), 'error' => '', 'old' => []]);
+        $user = Buyer::current();
+        $old = $user && User::profileDone($user)
+            ? ['donor_name' => User::realName($user), 'donor_role' => $user['role'], 'donor_class' => $user['class_name']]
+            : [];
+        $this->view('donate/form', ['title' => Lang::t('donate_title'), 'error' => '', 'old' => $old]);
     }
 
     public function store()

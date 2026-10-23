@@ -62,8 +62,13 @@ final class AdminController extends Controller
     {
         $this->requireAdmin();
         $this->checkCsrf();
+        $reason = $this->input('reason', 500);
+        if (mb_strlen($reason) < 3) {
+            $_SESSION['flash'] = ['warn', 'reject_reason_needed'];
+            $this->redirect('/admin');
+        }
         $wasPending = (Item::find((int) $id)['status'] ?? '') === 'pending';
-        Item::setReview((int) $id, false);
+        Item::setReview((int) $id, false, $reason);
         if ($wasPending) Telegram::markItemHandled((int) $id, Telegram::websiteName());
         $this->redirect('/admin');
     }

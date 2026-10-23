@@ -52,6 +52,10 @@ final class LoginController extends Controller
         $back = $this->safeBack((string) ($_SESSION['login_back'] ?? '/'));
         unset($_SESSION['login_token'], $_SESSION['login_back']);
         Buyer::login((int) $row['user_id']);
+        // First login: open the profile, then go on to where they were.
+        if (!User::profileDone(User::find((int) $row['user_id']))) {
+            $back = '/profile' . ($back !== '/' ? '?back=' . urlencode($back) : '');
+        }
         echo json_encode(['status' => 'ok', 'redirect' => $back]);
     }
 

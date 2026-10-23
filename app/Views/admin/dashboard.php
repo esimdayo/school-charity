@@ -3,6 +3,11 @@ use App\Core\{App, Csrf};
 $recipient = (string) App::config('recipient_name', '');
 $providerNames = implode(', ', array_map(fn ($p) => t('provider_' . $p), $payments));
 $orderLabel = fn ($s) => t(in_array($s, ['cancelled', 'unpaid'], true) ? "order_{$s}_s" : "order_$s");
+// Reject / remove button that opens a box where the admin must write why.
+$rejectBox = fn (array $i, string $label) => '<details class="reject-box"><summary class="btn ghost small">' . e($label) . '</summary>'
+    . '<form method="post" action="/admin/items/' . (int) $i['id'] . '/reject">' . Csrf::field()
+    . '<textarea name="reason" rows="2" maxlength="500" minlength="3" required placeholder="' . e(t('reject_reason_ph')) . '"></textarea>'
+    . '<button class="btn small danger">' . e($label) . '</button></form></details>';
 ?>
 <div class="admin-head">
   <h1><?= t('nav_admin') ?></h1>
@@ -93,11 +98,11 @@ $orderLabel = fn ($s) => t(in_array($s, ['cancelled', 'unpaid'], true) ? "order_
             <p class="muted small"><?= t('cat_' . $i['category']) ?></p>
             <p class="muted small"><?= e($i['donor_name']) ?> · <?= t('role_' . $i['donor_role']) ?> <?= e($i['donor_class']) ?></p>
             <?php if ($i['description'] !== ''): ?><p class="small"><?= e($i['description']) ?></p><?php endif ?>
-            <form method="post" class="inline">
+            <form method="post" class="inline" action="/admin/items/<?= (int) $i['id'] ?>/approve">
               <?= Csrf::field() ?>
-              <button class="btn small" formaction="/admin/items/<?= (int) $i['id'] ?>/approve"><?= t('approve') ?></button>
-              <button class="btn ghost small" formaction="/admin/items/<?= (int) $i['id'] ?>/reject"><?= t('reject') ?></button>
+              <button class="btn small"><?= t('approve') ?></button>
             </form>
+            <?= $rejectBox($i, t('reject')) ?>
           </div>
         </div>
       <?php endforeach ?>
@@ -134,10 +139,10 @@ $orderLabel = fn ($s) => t(in_array($s, ['cancelled', 'unpaid'], true) ? "order_
         <td><img class="thumb" src="<?= photo_url($i['photo']) ?>" alt=""></td>
         <td><a href="/item/<?= (int) $i['id'] ?>"><?= e($i['title']) ?></a><br><span class="muted small"><?= e($i['donor_name']) ?></span></td>
         <td><?= money($i['price']) ?></td>
-        <td><?= t('status_' . $i['status']) ?></td>
+        <td><?= t('status_' . $i['status']) ?><?php if ($i['status'] === 'rejected' && $i['reject_reason'] !== ''): ?><br><span class="muted small"><?= t('reason_label') ?>: <?= e($i['reject_reason']) ?></span><?php endif ?></td>
         <td>
           <?php if ($i['status'] === 'available'): ?>
-            <form method="post" action="/admin/items/<?= (int) $i['id'] ?>/reject"><?= Csrf::field() ?><button class="btn ghost small"><?= t('remove') ?></button></form>
+            <?= $rejectBox($i, t('remove')) ?>
           <?php elseif ($i['status'] === 'rejected'): ?>
             <form method="post" action="/admin/items/<?= (int) $i['id'] ?>/approve"><?= Csrf::field() ?><button class="btn ghost small"><?= t('put_back') ?></button></form>
           <?php endif ?>

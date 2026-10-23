@@ -32,7 +32,7 @@ $buyer = Buyer::current();
   <nav>
     <a href="/"><?= t('nav_shop') ?></a>
     <?php if ($buyer): ?>
-      <a href="/my" class="nav-keep"><?= t('nav_my_orders') ?></a>
+      <a href="/profile" class="nav-keep"><?= t('nav_profile') ?></a>
     <?php else: ?>
       <a href="/login?back=<?= $back ?>" class="nav-keep"><?= t('nav_login') ?></a>
     <?php endif ?>

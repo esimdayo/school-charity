@@ -182,6 +182,7 @@ final class Telegram
         $item = Item::find($itemId);
         $result = $item['status'] === 'rejected'
             ? '❌ <b>' . self::t('tg_item_rejected') . '</b>'
+                . ($item['reject_reason'] !== '' ? "\n" . self::t('reason_label') . ': ' . e($item['reject_reason']) : '')
             : '✅ <b>' . self::t('tg_item_approved') . '</b>';
         $footer = $byName !== '' ? $result . "\n" . self::t('tg_by', ['name' => e($byName)]) : $result;
         foreach (DB::all('SELECT * FROM telegram_item_messages WHERE item_id = ?', [$itemId]) as $row) {
@@ -222,7 +223,12 @@ final class Telegram
                 self::handleLogin($chatId, $m[1], $update['message']['from']);
                 return;
             }
-            $text = in_array($chatId, self::adminIds(), true)
+            $isAdmin = in_array($chatId, self::adminIds(), true);
+            if ($isAdmin && self::waitingReason($chatId) && trim($text) !== '' && $text[0] !== '/') {
+                self::rejectWithReason($chatId, trim($text), $update['message']['from'] ?? []);
+                return;
+            }
+            $text = $isAdmin
                 ? self::t('tg_hello_admin')
                 : self::t('tg_hello_other', ['id' => $chatId]);
             self::call('sendMessage', ['chat_id' => $chatId, 'text' => $text, 'parse_mode' => 'HTML']);
@@ -307,9 +313,21 @@ final class Telegram
                 self::markItemHandled((int) $item['id']);
                 return;
             }
-            Item::setReview((int) $item['id'], $action === 'approve');
-            $answer($action === 'approve' ? '✅' : '❌');
+            if ($action === 'reject') {
+                // Don't reject yet: first the admin has to write why.
+                $answer();
+                self::askReason((string) $cb['from']['id'], $item);
+                return;
+            }
+            Item::setReview((int) $item['id'], true);
+            $answer('✅');
             self::markItemHandled((int) $item['id'], $name);
+            return;
+        }
+        if ($action === 'noreason') {
+            Setting::set('tg_reason_wait_' . $cb['from']['id'], '');
+            $answer();
+            self::editMessage((string) $cb['message']['chat']['id'], (int) $cb['message']['message_id'], self::t('tg_reason_cancelled'));
             return;
         }
 
@@ -329,6 +347,47 @@ final class Telegram
         $answer($action === 'confirm' ? '✅' : '❌');
         self::markHandled((int) $order['id'], $name);
         self::notifyBuyer((int) $order['id']);
+    }
+
+    // Which item this admin is writing a rejection reason for, if any.
+    private static function waitingReason(string $chatId): int
+    {
+        return (int) Setting::get('tg_reason_wait_' . $chatId, '0');
+    }
+
+    private static function askReason(string $chatId, array $item): void
+    {
+        Setting::set('tg_reason_wait_' . $chatId, (string) $item['id']);
+        self::call('sendMessage', [
+            'chat_id' => $chatId,
+            'text' => self::t('tg_reason_ask', ['title' => e($item['title'])]),
+            'parse_mode' => 'HTML',
+            'reply_markup' => ['inline_keyboard' => [[
+                ['text' => self::t('tg_reason_cancel'), 'callback_data' => 'noreason:' . $item['id']],
+            ]]],
+        ]);
+    }
+
+    // The admin's next message after pressing "Reject" is the reason.
+    private static function rejectWithReason(string $chatId, string $reason, array $from): void
+    {
+        $item = Item::find(self::waitingReason($chatId));
+        Setting::set('tg_reason_wait_' . $chatId, '');
+        if (!$item || $item['status'] !== 'pending') {
+            self::call('sendMessage', ['chat_id' => $chatId, 'text' => self::t('tg_item_already')]);
+            return;
+        }
+        if (mb_strlen($reason) < 3) {
+            self::askReason($chatId, $item);
+            return;
+        }
+        Item::setReview((int) $item['id'], false, mb_substr($reason, 0, 500));
+        self::markItemHandled((int) $item['id'], trim(($from['first_name'] ?? '') . ' ' . ($from['last_name'] ?? '')));
+        self::call('sendMessage', [
+            'chat_id' => $chatId,
+            'text' => '❌ ' . self::t('tg_reason_saved', ['title' => e($item['title'])]),
+            'parse_mode' => 'HTML',
+        ]);
     }
 
     // Tells Telegram where to send button presses. Needs an https base_url.
