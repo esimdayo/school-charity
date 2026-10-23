@@ -21,7 +21,7 @@ require ROOT . '/app/Core/helpers.php';
 
 use App\Core\App;
 use App\Core\Router;
-use App\Controllers\{ShopController, DonateController, PaymentController, OrderController, AdminController, TelegramController, LangController, StoryController};
+use App\Controllers\{ShopController, DonateController, PaymentController, OrderController, AdminController, TelegramController, LangController, StoryController, LoginController, MyController};
 
 App::boot();
 
@@ -41,6 +41,10 @@ $router->post('/pay/test/{token}', [PaymentController::class, 'testSubmit']);
 
 $router->get('/order/{token}', [OrderController::class, 'show']);
 
+$router->get('/login', [LoginController::class, 'form']);
+$router->get('/login/check', [LoginController::class, 'check']);
+$router->post('/logout', [LoginController::class, 'logout']);
+$router->get('/my', [MyController::class, 'orders']);
 $router->get('/story', [StoryController::class, 'show']);
 $router->get('/lang/{lang}', [LangController::class, 'switch']);
 

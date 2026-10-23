@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS orders (
   pickup_code TEXT,
   payer_card TEXT,
   receipt TEXT,
+  user_id INTEGER,
   status TEXT NOT NULL DEFAULT 'pending',
   created_at INTEGER NOT NULL,
   sent_at INTEGER,
@@ -45,4 +46,18 @@ CREATE TABLE IF NOT EXISTS telegram_item_messages (
 CREATE TABLE IF NOT EXISTS settings (
   name TEXT PRIMARY KEY,
   value TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  telegram_id TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  username TEXT NOT NULL DEFAULT '',
+  created_at INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS login_tokens (
+  token TEXT PRIMARY KEY,
+  user_id INTEGER,
+  created_at INTEGER NOT NULL
 );

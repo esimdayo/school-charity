@@ -12,6 +12,7 @@
   <h1><?= t('checking_title') ?></h1>
   <p><strong><?= e($item['title']) ?></strong> · <?= money($order['amount']) ?></p>
   <p><?= t('checking_text') ?></p>
+  <?php if ($order['user_id']): ?><p class="muted small"><?= t('code_in_telegram') ?></p><?php endif ?>
 <?php elseif ($order['status'] === 'pending'): ?>
   <h1><?= t('waiting_title') ?></h1>
   <p><a class="btn" href="/pay/<?= e($order['provider']) ?>/<?= e($order['token']) ?>"><?= t('open_payment') ?></a></p>

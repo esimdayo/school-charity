@@ -1,5 +1,6 @@
 <?php
 use App\Core\Csrf;
+use App\Models\User;
 $donor = e($item['donor_name']) . ' (' . t('role_' . $item['donor_role']) . ($item['donor_class'] !== '' ? ', ' . e($item['donor_class']) : '') . ')';
 ?>
 <a class="muted" href="/"><?= t('back_to_shop') ?></a>
@@ -12,11 +13,15 @@ $donor = e($item['donor_name']) . ' (' . t('role_' . $item['donor_role']) . ($it
     <p class="muted"><a class="chip" href="/?cat=<?= e($item['category']) ?>"><?= t('cat_' . $item['category']) ?></a></p>
     <p class="muted"><?= t('donated_by', ['name' => $donor]) ?></p>
 
-    <?php if ($item['status'] === 'available'): ?>
+    <?php if ($item['status'] === 'available' && !$buyer): ?>
+      <div class="stack">
+        <a class="btn big tg-btn" href="/login?back=<?= urlencode('/item/' . (int) $item['id']) ?>"><?= t('login_to_buy') ?></a>
+        <p class="muted small"><?= t('login_to_buy_note') ?></p>
+      </div>
+    <?php elseif ($item['status'] === 'available'): ?>
       <form method="post" action="/item/<?= (int) $item['id'] ?>/buy" class="stack">
         <?= Csrf::field() ?>
-        <label><?= t('your_name') ?> <input name="buyer_name" required maxlength="80" autocomplete="name"></label>
-        <label><?= t('phone') ?> <input name="buyer_phone" required maxlength="20" placeholder="+998 90 123 45 67" autocomplete="tel" inputmode="tel"></label>
+        <p class="badge"><?= t('buying_as', ['name' => e(User::displayName($buyer))]) ?></p>
         <?php if (count($payments) > 1): ?>
           <fieldset>
             <legend><?= t('pay_with') ?></legend>

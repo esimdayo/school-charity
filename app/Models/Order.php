@@ -30,6 +30,12 @@ final class Order
                         WHERE o.status != 'cancelled' ORDER BY o.created_at DESC, o.id DESC LIMIT 200");
     }
 
+    public static function forUser(int $userId): array
+    {
+        return DB::all("SELECT o.*, i.title, i.photo FROM orders o JOIN items i ON i.id = o.item_id
+                        WHERE o.user_id = ? AND o.status != 'cancelled' ORDER BY o.created_at DESC, o.id DESC", [$userId]);
+    }
+
     public static function awaiting(): array
     {
         return DB::all("SELECT o.*, i.title, i.photo FROM orders o JOIN items i ON i.id = o.item_id
@@ -49,7 +55,7 @@ final class Order
     }
 
     // Reserves the item and creates the order, or returns null if someone else got it first.
-    public static function create(int $itemId, string $buyerName, string $buyerPhone, string $provider): ?array
+    public static function create(int $itemId, string $buyerName, string $buyerPhone, string $provider, ?int $userId = null): ?array
     {
         self::releaseExpired();
         $pdo = DB::pdo();
@@ -61,9 +67,9 @@ final class Order
             }
             $item = Item::find($itemId);
             $id = DB::insert(
-                'INSERT INTO orders (item_id, amount, buyer_name, buyer_phone, provider, token, status, created_at)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                [$itemId, $item['price'], $buyerName, $buyerPhone, $provider, bin2hex(random_bytes(16)), 'pending', time()]
+                'INSERT INTO orders (item_id, amount, buyer_name, buyer_phone, provider, token, status, created_at, user_id)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [$itemId, $item['price'], $buyerName, $buyerPhone, $provider, bin2hex(random_bytes(16)), 'pending', time(), $userId]
             );
             $pdo->commit();
             return self::find($id);

@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\{App, Controller, Lang, Setting};
+use App\Core\{App, Buyer, Controller, Lang, Setting};
+use App\Models\User;
 use App\Models\{Item, Order};
 
 final class ShopController extends Controller
@@ -37,16 +38,18 @@ final class ShopController extends Controller
             'title' => $item['title'],
             'item' => $item,
             'payments' => (array) App::config('payments', ['card']),
+            'buyer' => Buyer::current(),
         ]);
     }
 
     public function buy(string $id): void
     {
         $this->checkCsrf();
-        $name = $this->input('buyer_name', 80);
-        $phone = $this->input('buyer_phone', 20);
+        // Buyers log in with Telegram, so the bot can send them their pickup code.
+        $user = Buyer::current();
+        if (!$user) $this->redirect('/login?back=' . urlencode('/item/' . (int) $id));
         $provider = (string) ($_POST['provider'] ?? '');
-        if ($name === '' || !preg_match('/^[+\d\s()-]{7,20}$/', $phone) || !in_array($provider, (array) App::config('payments', ['card']), true)) {
+        if (!in_array($provider, (array) App::config('payments', ['card']), true)) {
             $this->view('message', [
                 'title' => Lang::t('check_details'),
                 'text' => Lang::t('check_details_text'),
@@ -54,7 +57,8 @@ final class ShopController extends Controller
             ], 400);
             return;
         }
-        $order = Order::create((int) $id, $name, $phone, $provider);
+        $contact = $user['username'] !== '' ? '@' . $user['username'] : 'Telegram';
+        $order = Order::create((int) $id, $user['name'], $contact, $provider, (int) $user['id']);
         if (!$order) {
             $this->view('message', [
                 'title' => Lang::t('not_available'),

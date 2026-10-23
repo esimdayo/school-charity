@@ -77,6 +77,7 @@ final class AdminController extends Controller
         if ($order && $order['status'] === 'awaiting') {
             Order::markPaid((int) $id);
             Telegram::markHandled((int) $id, Telegram::websiteName());
+            Telegram::notifyBuyer((int) $id);
         }
         $this->redirect('/admin');
     }
@@ -89,6 +90,7 @@ final class AdminController extends Controller
         if ($order && $order['status'] === 'awaiting') {
             Order::cancel((int) $id, 'unpaid');
             Telegram::markHandled((int) $id, Telegram::websiteName());
+            Telegram::notifyBuyer((int) $id);
         }
         $this->redirect('/admin');
     }

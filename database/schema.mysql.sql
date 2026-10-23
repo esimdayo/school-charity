@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS orders (
   pickup_code CHAR(6) NULL,
   payer_card CHAR(4) NULL,
   receipt VARCHAR(64) NULL,
+  user_id INT NULL,
   status VARCHAR(16) NOT NULL DEFAULT 'pending',
   created_at BIGINT NOT NULL,
   sent_at BIGINT NULL,
@@ -49,4 +50,18 @@ CREATE TABLE IF NOT EXISTS telegram_item_messages (
 CREATE TABLE IF NOT EXISTS settings (
   name VARCHAR(64) PRIMARY KEY,
   value TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  telegram_id VARCHAR(32) NOT NULL UNIQUE,
+  name VARCHAR(120) NOT NULL,
+  username VARCHAR(64) NOT NULL DEFAULT '',
+  created_at BIGINT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS login_tokens (
+  token VARCHAR(64) PRIMARY KEY,
+  user_id INT NULL,
+  created_at BIGINT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

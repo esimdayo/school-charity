@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\{App, Database as DB, Lang};
-use App\Models\{Item, Order};
+use App\Core\Setting;
+use App\Models\{Item, Order, User};
 
 // Telegram bot for admins: every donated item arrives with "Approve" / "Reject"
 // buttons, and every card payment with "Money arrived" / "Not received" buttons. Telegram sends the
@@ -68,7 +69,7 @@ final class Telegram
             '',
             '💰 <b>' . money($order['amount'], $lang) . '</b>',
             '🎁 ' . e($item['title']),
-            '👤 ' . e($order['buyer_name']) . ', ' . e($order['buyer_phone']),
+            '👤 ' . e($order['buyer_name']) . ($order['buyer_phone'] !== '' ? ', ' . e($order['buyer_phone']) : ''),
             '💳 ' . self::t('payer_card_short', ['last4' => e($order['payer_card'])]),
             '🧾 ' . self::t($order['receipt'] ? 'tg_receipt_yes' : 'tg_receipt_no'),
             '🕒 ' . fmt_date((int) $order['sent_at'], $lang),
@@ -216,11 +217,71 @@ final class Telegram
             self::handleButton($update['callback_query']);
         } elseif (isset($update['message']['chat']['id'])) {
             $chatId = (string) $update['message']['chat']['id'];
+            $text = (string) ($update['message']['text'] ?? '');
+            if (preg_match('/^\/start login_([a-f0-9]{32})$/', $text, $m) && isset($update['message']['from']['id'])) {
+                self::handleLogin($chatId, $m[1], $update['message']['from']);
+                return;
+            }
             $text = in_array($chatId, self::adminIds(), true)
                 ? self::t('tg_hello_admin')
                 : self::t('tg_hello_other', ['id' => $chatId]);
             self::call('sendMessage', ['chat_id' => $chatId, 'text' => $text, 'parse_mode' => 'HTML']);
         }
+    }
+
+    // The buyer pressed Start on the link from the site's login page.
+    private static function handleLogin(string $chatId, string $token, array $from): void
+    {
+        $user = User::fromTelegram($from);
+        $ok = User::confirmLoginToken($token, (int) $user['id']);
+        self::call('sendMessage', [
+            'chat_id' => $chatId,
+            'text' => self::t($ok ? 'tg_login_done' : 'tg_login_expired', ['name' => e($user['name'])]),
+            'parse_mode' => 'HTML',
+        ]);
+    }
+
+    // Tells the buyer (if they logged in with Telegram) that the admin confirmed
+    // their payment, with the pickup code, or that the money didn't arrive.
+    public static function notifyBuyer(int $orderId): void
+    {
+        if (!self::enabled()) return;
+        $order = Order::find($orderId);
+        $user = $order && $order['user_id'] ? User::find((int) $order['user_id']) : null;
+        if (!$user) return;
+        $item = Item::find((int) $order['item_id']);
+        $link = App::baseUrl() . '/order/' . $order['token'];
+        $vars = ['title' => e($item['title']), 'code' => e((string) $order['pickup_code']), 'amount' => money($order['amount'], self::lang())];
+        if ($order['status'] === 'paid') {
+            $text = self::t('tg_buyer_paid', $vars);
+        } elseif ($order['status'] === 'unpaid') {
+            $text = self::t('tg_buyer_unpaid', $vars);
+        } else {
+            return;
+        }
+        // Telegram refuses links to local addresses like http://charity.test, so link only to https sites.
+        if (str_starts_with($link, 'https://')) $text .= "\n\n" . '<a href="' . e($link) . '">' . self::t('view_order') . '</a>';
+        self::call('sendMessage', [
+            'chat_id' => $user['telegram_id'],
+            'text' => $text,
+            'parse_mode' => 'HTML',
+            'disable_web_page_preview' => true,
+        ]);
+    }
+
+    // The bot's @username, for t.me links. Asked from Telegram once, then remembered.
+    public static function botUsername(): string
+    {
+        $token = (string) App::config('telegram.bot_token', '');
+        $saved = Setting::get('bot_username');
+        if ($saved !== '' && Setting::get('bot_username_for') === hash('sha256', $token)) return $saved;
+        $me = self::call('getMe', []);
+        $name = (string) ($me['username'] ?? '');
+        if ($name !== '') {
+            Setting::set('bot_username', $name);
+            Setting::set('bot_username_for', hash('sha256', $token));
+        }
+        return $name;
     }
 
     private static function handleButton(array $cb): void
@@ -267,6 +328,7 @@ final class Telegram
         else return;
         $answer($action === 'confirm' ? '✅' : '❌');
         self::markHandled((int) $order['id'], $name);
+        self::notifyBuyer((int) $order['id']);
     }
 
     // Tells Telegram where to send button presses. Needs an https base_url.

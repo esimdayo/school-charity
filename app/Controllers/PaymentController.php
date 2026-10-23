@@ -66,8 +66,12 @@ final class PaymentController extends Controller
         $this->checkCsrf();
         $order = $this->pendingOrder($token, 'test');
         if (!$order) return;
-        if (($_POST['result'] ?? '') === 'paid') Order::markPaid((int) $order['id']);
-        else Order::cancel((int) $order['id']);
+        if (($_POST['result'] ?? '') === 'paid') {
+            Order::markPaid((int) $order['id']);
+            Telegram::notifyBuyer((int) $order['id']);
+        } else {
+            Order::cancel((int) $order['id']);
+        }
         $this->redirect("/order/$token");
     }
 

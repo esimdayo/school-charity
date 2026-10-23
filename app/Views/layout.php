@@ -1,7 +1,8 @@
 <?php
-use App\Core\{App, Lang};
+use App\Core\{App, Buyer, Lang};
 $siteName = (string) App::config('site_name', 'School Charity Shop');
 $back = urlencode($_SERVER['REQUEST_URI'] ?? '/');
+$buyer = Buyer::current();
 ?>
 <!doctype html>
 <html lang="<?= Lang::current() ?>">
@@ -30,6 +31,11 @@ $back = urlencode($_SERVER['REQUEST_URI'] ?? '/');
   <a class="brand" href="/"><span class="heart">♥</span> <?= e($siteName) ?></a>
   <nav>
     <a href="/"><?= t('nav_shop') ?></a>
+    <?php if ($buyer): ?>
+      <a href="/my" class="nav-keep"><?= t('nav_my_orders') ?></a>
+    <?php else: ?>
+      <a href="/login?back=<?= $back ?>" class="nav-keep"><?= t('nav_login') ?></a>
+    <?php endif ?>
     <a href="/donate" class="btn small"><?= t('nav_donate') ?></a>
     <?php if ($admin): ?><a href="/admin"><?= t('nav_admin') ?></a><?php endif ?>
   </nav>
