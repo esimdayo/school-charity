@@ -11,6 +11,10 @@
   --paper-line: #dce6f5;
   --paper-margin: #f3b4b4;
   --tape: rgba(255, 214, 102, .65);
+  /* Hand drawings: raised hands, hands holding a heart, hands reaching for each other */
+  --hands-raised: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-6 0 106 170'%3E%3Cg fill='%23ffd24a'%3E%3Crect x='24' y='62' width='52' height='52' rx='16'/%3E%3Crect x='25' y='20' width='12' height='58' rx='6'/%3E%3Crect x='38.5' y='10' width='12' height='64' rx='6'/%3E%3Crect x='52' y='16' width='12' height='60' rx='6'/%3E%3Crect x='65' y='32' width='11' height='46' rx='5.5'/%3E%3Crect x='18' y='54' width='13' height='48' rx='6.5' transform='rotate(-30 26 100)'/%3E%3Crect x='32' y='100' width='36' height='70' rx='8'/%3E%3C/g%3E%3Cpath d='M50 98c-4-6-13-4-12 3 1 5 12 11 12 11s11-6 12-11c1-7-8-9-12-3z' fill='%23e0573c'/%3E%3C/svg%3E");
+  --hands-holding: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 150' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E %3Cpath d='M110 82c-14-20-46-12-40 12 4 16 40 34 40 34s36-18 40-34c6-24-26-32-40-12z' fill='%23e0573c' fill-opacity='.85'/%3E %3Cg fill='%23ffd24a' stroke='%23fdfbf4' stroke-width='3'%3E %3Cpath d='M0 132l56-14c8-2 14-6 20-10l10-8c4-3 9-3 12 1 3 4 2 9-2 12l-6 5 18-2c6 0 9 4 8 9-1 4-5 6-9 7l-32 6c-10 2-18 6-28 9l-47 12z'/%3E %3Cpath d='M220 132l-56-14c-8-2-14-6-20-10l-10-8c-4-3-9-3-12 1-3 4-2 9 2 12l6 5-18-2c-6 0-9 4-8 9 1 4 5 6 9 7l32 6c10 2 18 6 28 9l47 12z'/%3E %3C/g%3E %3Cg stroke='%239bb5e0' stroke-width='3'%3E%3Cpath d='M60 40l-8-10M110 22V8M160 40l8-10'/%3E%3C/g%3E %3C/svg%3E");
+  --hands-reaching: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 100' stroke-linecap='round' stroke-linejoin='round'%3E %3Cg fill='%23ffd24a' stroke='%23fdfbf4' stroke-width='3'%3E %3Cpath d='M0 50c40-4 90-10 130-12l22-1c6 0 10 3 12 7l34 0c5 0 8 3 8 7s-3 7-8 7h-28c2 2 2 6-1 8l-3 2c2 3 1 7-3 9-8 4-22 6-34 4-30 2-80 6-129 -4z'/%3E %3Cpath d='M400 50c-40-4-90-10-130-12l-22-1c-6 0-10 3-12 7l-34 0c-5 0-8 3-8 7s3 7 8 7h28c-2 2-2 6 1 8l3 2c-2 3-1 7 3 9 8 4 22 6 34 4 30 2 80 6 129 -4z'/%3E %3C/g%3E %3Cpath d='M200 30c-5-7-16-4-14 4 1 6 14 13 14 13s13-7 14-13c2-8-9-11-14-4z' fill='%23e0573c'/%3E %3Cg stroke='%239bb5e0' stroke-width='2.5' fill='none'%3E%3Cpath d='M178 26l-6-6M222 26l6-6M200 14V6'/%3E%3C/g%3E %3C/svg%3E");
   --on-accent: #ffffff;
   --hover: #f1ece4;
   --input: #ffffff;
@@ -40,6 +44,9 @@
     --paper-line: #222b3c;
     --paper-margin: #5a2f38;
     --tape: rgba(255, 214, 102, .35);
+    --hands-raised: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-6 0 106 170'%3E%3Cg fill='%23c99a2e'%3E%3Crect x='24' y='62' width='52' height='52' rx='16'/%3E%3Crect x='25' y='20' width='12' height='58' rx='6'/%3E%3Crect x='38.5' y='10' width='12' height='64' rx='6'/%3E%3Crect x='52' y='16' width='12' height='60' rx='6'/%3E%3Crect x='65' y='32' width='11' height='46' rx='5.5'/%3E%3Crect x='18' y='54' width='13' height='48' rx='6.5' transform='rotate(-30 26 100)'/%3E%3Crect x='32' y='100' width='36' height='70' rx='8'/%3E%3C/g%3E%3Cpath d='M50 98c-4-6-13-4-12 3 1 5 12 11 12 11s11-6 12-11c1-7-8-9-12-3z' fill='%23d0604c'/%3E%3C/svg%3E");
+    --hands-holding: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 150' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E %3Cpath d='M110 82c-14-20-46-12-40 12 4 16 40 34 40 34s36-18 40-34c6-24-26-32-40-12z' fill='%23d0604c' fill-opacity='.85'/%3E %3Cg fill='%23c99a2e' stroke='%23151a24' stroke-width='3'%3E %3Cpath d='M0 132l56-14c8-2 14-6 20-10l10-8c4-3 9-3 12 1 3 4 2 9-2 12l-6 5 18-2c6 0 9 4 8 9-1 4-5 6-9 7l-32 6c-10 2-18 6-28 9l-47 12z'/%3E %3Cpath d='M220 132l-56-14c-8-2-14-6-20-10l-10-8c-4-3-9-3-12 1-3 4-2 9 2 12l6 5-18-2c-6 0-9 4-8 9 1 4 5 6 9 7l32 6c10 2 18 6 28 9l47 12z'/%3E %3C/g%3E %3Cg stroke='%233d5480' stroke-width='3'%3E%3Cpath d='M60 40l-8-10M110 22V8M160 40l8-10'/%3E%3C/g%3E %3C/svg%3E");
+    --hands-reaching: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 100' stroke-linecap='round' stroke-linejoin='round'%3E %3Cg fill='%23c99a2e' stroke='%23151a24' stroke-width='3'%3E %3Cpath d='M0 50c40-4 90-10 130-12l22-1c6 0 10 3 12 7l34 0c5 0 8 3 8 7s-3 7-8 7h-28c2 2 2 6-1 8l-3 2c2 3 1 7-3 9-8 4-22 6-34 4-30 2-80 6-129 -4z'/%3E %3Cpath d='M400 50c-40-4-90-10-130-12l-22-1c-6 0-10 3-12 7l-34 0c-5 0-8 3-8 7s3 7 8 7h28c-2 2-2 6 1 8l3 2c-2 3-1 7 3 9 8 4 22 6 34 4 30 2 80 6 129 -4z'/%3E %3C/g%3E %3Cpath d='M200 30c-5-7-16-4-14 4 1 6 14 13 14 13s13-7 14-13c2-8-9-11-14-4z' fill='%23d0604c'/%3E %3Cg stroke='%233d5480' stroke-width='2.5' fill='none'%3E%3Cpath d='M178 26l-6-6M222 26l6-6M200 14V6'/%3E%3C/g%3E %3C/svg%3E");
     --hover: #262e3f;
     --input: #171c27;
     --placeholder: #262e3f;
@@ -65,6 +72,9 @@
   --paper-line: #222b3c;
   --paper-margin: #5a2f38;
   --tape: rgba(255, 214, 102, .35);
+  --hands-raised: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-6 0 106 170'%3E%3Cg fill='%23c99a2e'%3E%3Crect x='24' y='62' width='52' height='52' rx='16'/%3E%3Crect x='25' y='20' width='12' height='58' rx='6'/%3E%3Crect x='38.5' y='10' width='12' height='64' rx='6'/%3E%3Crect x='52' y='16' width='12' height='60' rx='6'/%3E%3Crect x='65' y='32' width='11' height='46' rx='5.5'/%3E%3Crect x='18' y='54' width='13' height='48' rx='6.5' transform='rotate(-30 26 100)'/%3E%3Crect x='32' y='100' width='36' height='70' rx='8'/%3E%3C/g%3E%3Cpath d='M50 98c-4-6-13-4-12 3 1 5 12 11 12 11s11-6 12-11c1-7-8-9-12-3z' fill='%23d0604c'/%3E%3C/svg%3E");
+  --hands-holding: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 150' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E %3Cpath d='M110 82c-14-20-46-12-40 12 4 16 40 34 40 34s36-18 40-34c6-24-26-32-40-12z' fill='%23d0604c' fill-opacity='.85'/%3E %3Cg fill='%23c99a2e' stroke='%23151a24' stroke-width='3'%3E %3Cpath d='M0 132l56-14c8-2 14-6 20-10l10-8c4-3 9-3 12 1 3 4 2 9-2 12l-6 5 18-2c6 0 9 4 8 9-1 4-5 6-9 7l-32 6c-10 2-18 6-28 9l-47 12z'/%3E %3Cpath d='M220 132l-56-14c-8-2-14-6-20-10l-10-8c-4-3-9-3-12 1-3 4-2 9 2 12l6 5-18-2c-6 0-9 4-8 9 1 4 5 6 9 7l32 6c10 2 18 6 28 9l47 12z'/%3E %3C/g%3E %3Cg stroke='%233d5480' stroke-width='3'%3E%3Cpath d='M60 40l-8-10M110 22V8M160 40l8-10'/%3E%3C/g%3E %3C/svg%3E");
+  --hands-reaching: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 100' stroke-linecap='round' stroke-linejoin='round'%3E %3Cg fill='%23c99a2e' stroke='%23151a24' stroke-width='3'%3E %3Cpath d='M0 50c40-4 90-10 130-12l22-1c6 0 10 3 12 7l34 0c5 0 8 3 8 7s-3 7-8 7h-28c2 2 2 6-1 8l-3 2c2 3 1 7-3 9-8 4-22 6-34 4-30 2-80 6-129 -4z'/%3E %3Cpath d='M400 50c-40-4-90-10-130-12l-22-1c-6 0-10 3-12 7l-34 0c-5 0-8 3-8 7s3 7 8 7h28c-2 2-2 6 1 8l3 2c-2 3-1 7 3 9 8 4 22 6 34 4 30 2 80 6 129 -4z'/%3E %3C/g%3E %3Cpath d='M200 30c-5-7-16-4-14 4 1 6 14 13 14 13s13-7 14-13c2-8-9-11-14-4z' fill='%23d0604c'/%3E %3Cg stroke='%233d5480' stroke-width='2.5' fill='none'%3E%3Cpath d='M178 26l-6-6M222 26l6-6M200 14V6'/%3E%3C/g%3E %3C/svg%3E");
   --hover: #262e3f;
   --input: #171c27;
   --placeholder: #262e3f;
@@ -329,8 +339,8 @@ h2 { font-size: 1.9rem; }
   transform: translateX(-50%) rotate(-3deg); background: var(--tape);
 }
 .hero::after {
-  content: ""; position: absolute; right: 24px; bottom: 12px; width: 220px; height: 120px; pointer-events: none;
-  background: no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 120' fill='none' stroke='%239bb5e0' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M30 20l6 14 15 2-11 10 3 15-13-7-13 7 3-15-11-10 15-2z'/%3E%3Cpath d='M180 30c-10-14-30-4-20 12l20 18 20-18c10-16-10-26-20-12z'/%3E%3Cpath d='M70 90q20-20 40 0t40 0 40 0'/%3E%3Cpath d='M110 25l40 40m-40-40l-6 6 40 40 6-6'/%3E%3C/svg%3E");
+  content: ""; position: absolute; right: 20px; bottom: 6px; width: 230px; height: 157px; pointer-events: none;
+  background: no-repeat center/contain var(--hands-holding);
 }
 .goal { transform: rotate(.3deg); }
 .goal-bar { height: 18px; border: 2px solid var(--accent); background: repeating-linear-gradient(45deg, var(--accent-soft) 0 8px, transparent 8px 16px); }
@@ -349,13 +359,25 @@ a.item:hover { transform: rotate(0) scale(1.03); box-shadow: 4px 6px 0 var(--sha
 .btn.danger { box-shadow: 2px 2px 0 #7f2219; }
 .tg-btn { box-shadow: 2px 2px 0 #1677ab; }
 .card { border-width: 2px; }
-footer::before { content: "✏️ "; }
+footer::before {
+  content: ""; display: block; width: min(340px, 90%); aspect-ratio: 4 / 1; margin: 0 auto 10px;
+  background: no-repeat center/contain var(--hands-reaching);
+}
+/* Raised hands peeking from the bottom corners on wide screens */
+@media (min-width: 1280px) {
+  body::before, body::after {
+    content: ""; position: fixed; bottom: -36px; width: 92px; height: 160px; z-index: -1; pointer-events: none;
+    background: no-repeat center/contain var(--hands-raised);
+  }
+  body::before { left: 0; transform: rotate(12deg); }
+  body::after { right: 0; transform: scaleX(-1) rotate(12deg); }
+}
 @media (prefers-reduced-motion: reduce) { a.item:hover { transform: none; } }
 @media (max-width: 720px) {
   body { background-image: repeating-linear-gradient(0deg, var(--paper-line) 0 1px, transparent 1px 32px); }
   h1 { font-size: 2rem; }
   .hero h1 { font-size: 2.3rem; }
   .hero > div, .hero.hero-solo > div { max-width: none; }
-  .hero::after { display: none; }
+  .hero::after { position: static; width: 170px; height: 116px; margin: -4px auto 0; }
   .brand { font-size: 1.4rem; }
 }
