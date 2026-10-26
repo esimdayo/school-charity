@@ -12,7 +12,7 @@ $buyer = Buyer::current();
 <title><?= e($title) ?> · <?= e($siteName) ?></title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap">
 <link rel="stylesheet" href="/style.css">
 <script>
   // Apply the theme the visitor picked before the page draws, so it doesn't flash.
