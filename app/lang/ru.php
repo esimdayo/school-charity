@@ -295,4 +295,6 @@ return [
     'choose_role_option' => '— выберите —',
     'class_label' => 'Класс',
     'profile_save_continue' => 'Сохранить и продолжить',
+    'intro_text' => 'Каждая вещь кому-то помогает',
+    'intro_skip' => 'Пропустить',
 ];

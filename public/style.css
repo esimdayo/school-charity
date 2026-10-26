@@ -364,3 +364,44 @@ footer::before {
   .hero.hero-solo > div { max-width: none; }
   .hero::after { position: static; width: 190px; height: 144px; margin: 8px auto 0; transform: none; animation: none; }
 }
+
+/* Intro on the main page: two hands reach for each other, a heart pops up,
+   then the screen closes into the heart and shows the site. */
+.intro {
+  position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  background: radial-gradient(circle at 50% 45%, var(--accent-soft), var(--bg) 70%); cursor: pointer;
+  animation: intro-close .7s cubic-bezier(.7, 0, .3, 1) 2.9s forwards;
+}
+.no-intro .intro { display: none; }
+.intro.intro-out { animation: intro-skip .45s cubic-bezier(.7, 0, .3, 1) forwards; }
+.intro-hands { width: min(560px, 92vw); overflow: visible; }
+.intro-left { animation: intro-left 1.3s cubic-bezier(.45, .05, .35, 1.15) both; }
+.intro-right { animation: intro-right 1.3s cubic-bezier(.45, .05, .35, 1.15) both; }
+.intro-heart { transform-origin: 200px 20px; transform-box: view-box; animation: intro-pop .5s cubic-bezier(.3, 1.6, .5, 1) 1.25s both; }
+.intro-rays { opacity: 0; animation: intro-fade .3s ease-out 1.55s forwards; }
+.intro-text { margin: 0; font-size: clamp(1.2rem, 4vw, 1.7rem); font-weight: 900; color: var(--text); text-align: center; padding: 0 16px; opacity: 0; animation: intro-up .5s ease-out 1.6s forwards; }
+.intro-skip { position: absolute; bottom: 24px; background: none; border: 0; color: var(--muted); font: inherit; font-size: .9rem; cursor: pointer; text-decoration: underline; }
+@keyframes intro-left { from { transform: translateX(-380px); opacity: 0; } 30% { opacity: 1; } to { transform: translateX(14px); } }
+@keyframes intro-right { from { transform: translateX(380px); opacity: 0; } 30% { opacity: 1; } to { transform: translateX(-14px); } }
+@keyframes intro-pop { from { transform: scale(0); } to { transform: scale(1); } }
+@keyframes intro-fade { to { opacity: 1; } }
+@keyframes intro-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes intro-close { from { clip-path: circle(150% at 50% 45%); } to { clip-path: circle(0 at 50% 45%); } }
+@keyframes intro-skip { from { clip-path: circle(150% at 50% 45%); } to { clip-path: circle(0 at 50% 45%); } }
+
+/* Loading spinner for slow page loads */
+.loader {
+  position: fixed; inset: 0; z-index: 900; display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(2px);
+  opacity: 0; visibility: hidden; transition: opacity .2s, visibility .2s;
+}
+.loader.on { opacity: 1; visibility: visible; }
+.loader-ring {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 10%, #ffb627, var(--accent), #2ab3a6, transparent 95%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 9px), #000 calc(100% - 8px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 9px), #000 calc(100% - 8px));
+  animation: loader-spin .9s linear infinite;
+}
+@keyframes loader-spin { to { transform: rotate(1turn); } }
+@media (prefers-reduced-motion: reduce) { .loader-ring { animation-duration: 2.5s; } }

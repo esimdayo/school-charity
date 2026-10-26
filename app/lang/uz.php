@@ -295,4 +295,6 @@ Admin bo\'lish uchun bu raqamni config.php dagi telegram admin_ids ga qo\'shing.
     'choose_role_option' => '— tanlang —',
     'class_label' => 'Sinf',
     'profile_save_continue' => 'Saqlash va davom etish',
+    'intro_text' => 'Har bir buyum kimgadir yordam beradi',
+    'intro_skip' => 'O\'tkazib yuborish',
 ];

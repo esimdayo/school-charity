@@ -297,4 +297,6 @@ To become an admin, add this number to telegram admin_ids in config.php.',
     'choose_role_option' => '— choose —',
     'class_label' => 'Class',
     'profile_save_continue' => 'Save and continue',
+    'intro_text' => 'Every item helps someone',
+    'intro_skip' => 'Skip',
 ];
