@@ -2,11 +2,11 @@
 use App\Core\Csrf;
 use App\Controllers\StoryController;
 ?>
-<a class="muted" href="/admin"><?= t('back_admin') ?></a>
+<a class="muted" href="<?= BASE_PATH ?>/admin"><?= t('back_admin') ?></a>
 <h1><?= t('settings_title') ?></h1>
 <?php if ($flash): ?><p class="badge <?= e($flash[0]) ?>"><?= t($flash[1]) ?></p><?php endif ?>
 <?php if ($error): ?><p class="badge warn"><?= e($error) ?></p><?php endif ?>
-<form method="post" action="/admin/settings" enctype="multipart/form-data" class="card stack">
+<form method="post" action="<?= BASE_PATH ?>/admin/settings" enctype="multipart/form-data" class="card stack">
   <?= Csrf::field() ?>
   <h2><?= t('goal_label') ?></h2>
   <label><?= t('goal_amount') ?>

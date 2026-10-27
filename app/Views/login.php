@@ -13,10 +13,10 @@
 <script>
   (() => {
     const status = document.getElementById('login-status');
-    const check = () => fetch('/login/check', { credentials: 'same-origin' })
+    const check = () => fetch(<?= json_encode(BASE_PATH . '/login/check') ?>, { credentials: 'same-origin' })
       .then((r) => r.json())
       .then((d) => {
-        if (d.status === 'ok') { location.href = d.redirect; return; }
+        if (d.status === 'ok') { location.href = <?= json_encode(BASE_PATH) ?> + d.redirect; return; }
         if (d.status === 'expired') { status.textContent = <?= json_encode(t('login_expired')) ?>; setTimeout(() => location.reload(), 1500); return; }
         setTimeout(check, 2000);
       })

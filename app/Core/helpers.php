@@ -4,6 +4,9 @@ declare(strict_types=1);
 // Small functions used in the views.
 use App\Core\{App, Lang};
 
+// bin/telegram-bot.php runs without a web address.
+defined('BASE_PATH') || define('BASE_PATH', '');
+
 function e(mixed $s): string
 {
     return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
@@ -40,7 +43,7 @@ function masked_card(): string
 
 function photo_url(string $photo): string
 {
-    return '/uploads/' . rawurlencode(basename($photo));
+    return BASE_PATH . '/uploads/' . rawurlencode(basename($photo));
 }
 
 // "13.10 – 19.10" for the week that starts on $monday.

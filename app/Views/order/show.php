@@ -15,14 +15,14 @@
   <?php if ($order['user_id']): ?><p class="muted small"><?= t('code_in_telegram') ?></p><?php endif ?>
 <?php elseif ($order['status'] === 'pending'): ?>
   <h1><?= t('waiting_title') ?></h1>
-  <p><a class="btn" href="/pay/<?= e($order['provider']) ?>/<?= e($order['token']) ?>"><?= t('open_payment') ?></a></p>
+  <p><a class="btn" href="<?= BASE_PATH ?>/pay/<?= e($order['provider']) ?>/<?= e($order['token']) ?>"><?= t('open_payment') ?></a></p>
 <?php elseif ($order['status'] === 'unpaid'): ?>
   <h1><?= t('not_received_title') ?></h1>
   <p><?= t('not_received_text') ?></p>
-  <a class="btn" href="/"><?= t('to_shop') ?></a>
+  <a class="btn" href="<?= BASE_PATH ?>/"><?= t('to_shop') ?></a>
 <?php else: ?>
   <h1><?= t('order_cancelled') ?></h1>
   <p><?= t('no_money') ?></p>
-  <a class="btn" href="/"><?= t('to_shop') ?></a>
+  <a class="btn" href="<?= BASE_PATH ?>/"><?= t('to_shop') ?></a>
 <?php endif ?>
 </div>

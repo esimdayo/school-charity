@@ -5,16 +5,16 @@ $providerNames = implode(', ', array_map(fn ($p) => t('provider_' . $p), $paymen
 $orderLabel = fn ($s) => t(in_array($s, ['cancelled', 'unpaid'], true) ? "order_{$s}_s" : "order_$s");
 // Reject / remove button that opens a box where the admin must write why.
 $rejectBox = fn (array $i, string $label) => '<details class="reject-box"><summary class="btn ghost small">' . e($label) . '</summary>'
-    . '<form method="post" action="/admin/items/' . (int) $i['id'] . '/reject">' . Csrf::field()
+    . '<form method="post" action="<?= BASE_PATH ?>/admin/items/' . (int) $i['id'] . '/reject">' . Csrf::field()
     . '<textarea name="reason" rows="2" maxlength="500" minlength="3" required placeholder="' . e(t('reject_reason_ph')) . '"></textarea>'
     . '<button class="btn small danger">' . e($label) . '</button></form></details>';
 ?>
 <div class="admin-head">
   <h1><?= t('nav_admin') ?></h1>
   <div class="admin-links">
-    <a class="btn ghost small" href="/admin/stats"><?= t('stats_title') ?></a>
-    <a class="btn ghost small" href="/admin/settings"><?= t('settings_title') ?></a>
-    <form method="post" action="/admin/logout"><?= Csrf::field() ?><button class="btn ghost small"><?= t('log_out') ?></button></form>
+    <a class="btn ghost small" href="<?= BASE_PATH ?>/admin/stats"><?= t('stats_title') ?></a>
+    <a class="btn ghost small" href="<?= BASE_PATH ?>/admin/settings"><?= t('settings_title') ?></a>
+    <form method="post" action="<?= BASE_PATH ?>/admin/logout"><?= Csrf::field() ?><button class="btn ghost small"><?= t('log_out') ?></button></form>
   </div>
 </div>
 
@@ -26,7 +26,7 @@ $rejectBox = fn (array $i, string $label) => '<details class="reject-box"><summa
     <span class="muted"><?= t('stat_raised') ?></span>
     <strong><?= money($raised['total']) ?></strong>
     <?php if ($raisedSince): ?><span class="muted small"><?= t('raised_since', ['date' => fmt_date($raisedSince)]) ?></span><?php endif ?>
-    <form method="post" action="/admin/raised/reset" onsubmit="return confirm(<?= e(json_encode(t('reset_confirm'))) ?>)">
+    <form method="post" action="<?= BASE_PATH ?>/admin/raised/reset" onsubmit="return confirm(<?= e(json_encode(t('reset_confirm'))) ?>)">
       <?= Csrf::field() ?>
       <button class="btn ghost small"><?= t('reset_raised') ?></button>
     </form>
@@ -54,12 +54,12 @@ $rejectBox = fn (array $i, string $label) => '<details class="reject-box"><summa
             <strong class="price"><?= money($o['amount']) ?></strong>
             <span><?= e($o['title']) ?></span>
             <span class="muted small"><?= e($o['buyer_name']) ?> · <?= e($o['buyer_phone']) ?> · <?= t('payer_card_short', ['last4' => e($o['payer_card'])]) ?> · <?= fmt_date((int) $o['sent_at']) ?></span>
-            <?php if ($o['receipt']): ?><a class="small" href="/admin/receipt/<?= (int) $o['id'] ?>" target="_blank">🧾 <?= t('receipt_view') ?></a><?php endif ?>
+            <?php if ($o['receipt']): ?><a class="small" href="<?= BASE_PATH ?>/admin/receipt/<?= (int) $o['id'] ?>" target="_blank">🧾 <?= t('receipt_view') ?></a><?php endif ?>
           </div>
           <form method="post" class="inline">
             <?= Csrf::field() ?>
-            <button class="btn small" formaction="/admin/orders/<?= (int) $o['id'] ?>/confirm"><?= t('money_arrived') ?></button>
-            <button class="btn ghost small" formaction="/admin/orders/<?= (int) $o['id'] ?>/unpaid"><?= t('not_received') ?></button>
+            <button class="btn small" formaction="<?= BASE_PATH ?>/admin/orders/<?= (int) $o['id'] ?>/confirm"><?= t('money_arrived') ?></button>
+            <button class="btn ghost small" formaction="<?= BASE_PATH ?>/admin/orders/<?= (int) $o['id'] ?>/unpaid"><?= t('not_received') ?></button>
           </form>
         </div>
       <?php endforeach ?>
@@ -68,7 +68,7 @@ $rejectBox = fn (array $i, string $label) => '<details class="reject-box"><summa
     <p class="muted"><?= t('nothing_to_check_payments') ?></p>
   <?php endif ?>
   <?php if ($telegram): ?>
-    <form method="post" action="/admin/telegram/connect" class="tg-connect">
+    <form method="post" action="<?= BASE_PATH ?>/admin/telegram/connect" class="tg-connect">
       <?= Csrf::field() ?>
       <span class="muted small"><?= t('tg_connect_help') ?></span>
       <button class="btn ghost small"><?= t('tg_connect_button') ?></button>
@@ -79,7 +79,7 @@ $rejectBox = fn (array $i, string $label) => '<details class="reject-box"><summa
 
 <section class="card">
   <h2><?= t('hand_over') ?></h2>
-  <form method="get" action="/admin/pickup" class="inline">
+  <form method="get" action="<?= BASE_PATH ?>/admin/pickup" class="inline">
     <input name="code" placeholder="<?= e(t('code_placeholder')) ?>" required maxlength="6" style="text-transform:uppercase">
     <button class="btn"><?= t('find') ?></button>
   </form>
@@ -98,7 +98,7 @@ $rejectBox = fn (array $i, string $label) => '<details class="reject-box"><summa
             <p class="muted small"><?= t('cat_' . $i['category']) ?></p>
             <p class="muted small"><?= e($i['donor_name']) ?> · <?= t('role_' . $i['donor_role']) ?> <?= e($i['donor_class']) ?></p>
             <?php if ($i['description'] !== ''): ?><p class="small"><?= e($i['description']) ?></p><?php endif ?>
-            <form method="post" class="inline" action="/admin/items/<?= (int) $i['id'] ?>/approve">
+            <form method="post" class="inline" action="<?= BASE_PATH ?>/admin/items/<?= (int) $i['id'] ?>/approve">
               <?= Csrf::field() ?>
               <button class="btn small"><?= t('approve') ?></button>
             </form>
@@ -122,7 +122,7 @@ $rejectBox = fn (array $i, string $label) => '<details class="reject-box"><summa
         <td><?= e($o['buyer_name']) ?><br><span class="muted small"><?= e($o['buyer_phone']) ?></span></td>
         <td><?= money($o['amount']) ?></td>
         <td><?= e($orderLabel($o['status'])) ?><br><span class="muted small"><?= t('provider_' . $o['provider']) ?><?= $o['payer_card'] ? ' · •••• ' . e($o['payer_card']) : '' ?></span></td>
-        <td><?php if ($o['pickup_code']): ?><a href="/admin/pickup?code=<?= e($o['pickup_code']) ?>"><?= e($o['pickup_code']) ?></a><?php endif ?></td>
+        <td><?php if ($o['pickup_code']): ?><a href="<?= BASE_PATH ?>/admin/pickup?code=<?= e($o['pickup_code']) ?>"><?= e($o['pickup_code']) ?></a><?php endif ?></td>
         <td class="small"><?= fmt_date((int) $o['created_at']) ?></td>
       </tr>
     <?php endforeach ?>
@@ -137,14 +137,14 @@ $rejectBox = fn (array $i, string $label) => '<details class="reject-box"><summa
     <?php foreach ($items as $i): ?>
       <tr>
         <td><img class="thumb" src="<?= photo_url($i['photo']) ?>" alt=""></td>
-        <td><a href="/item/<?= (int) $i['id'] ?>"><?= e($i['title']) ?></a><br><span class="muted small"><?= e($i['donor_name']) ?></span></td>
+        <td><a href="<?= BASE_PATH ?>/item/<?= (int) $i['id'] ?>"><?= e($i['title']) ?></a><br><span class="muted small"><?= e($i['donor_name']) ?></span></td>
         <td><?= money($i['price']) ?></td>
         <td><?= t('status_' . $i['status']) ?><?php if ($i['status'] === 'rejected' && $i['reject_reason'] !== ''): ?><br><span class="muted small"><?= t('reason_label') ?>: <?= e($i['reject_reason']) ?></span><?php endif ?></td>
         <td>
           <?php if ($i['status'] === 'available'): ?>
             <?= $rejectBox($i, t('remove')) ?>
           <?php elseif ($i['status'] === 'rejected'): ?>
-            <form method="post" action="/admin/items/<?= (int) $i['id'] ?>/approve"><?= Csrf::field() ?><button class="btn ghost small"><?= t('put_back') ?></button></form>
+            <form method="post" action="<?= BASE_PATH ?>/admin/items/<?= (int) $i['id'] ?>/approve"><?= Csrf::field() ?><button class="btn ghost small"><?= t('put_back') ?></button></form>
           <?php endif ?>
         </td>
       </tr>

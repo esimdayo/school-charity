@@ -11,9 +11,10 @@ abstract class Controller
         View::render($name, $data, Auth::check());
     }
 
+    // $to is a path on this site, e.g. /admin.
     protected function redirect(string $to): never
     {
-        header('Location: ' . $to);
+        header('Location: ' . BASE_PATH . $to);
         exit;
     }
 

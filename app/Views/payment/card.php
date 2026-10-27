@@ -3,7 +3,7 @@ use App\Core\{App, Csrf};
 $card = full_card();
 $recipient = (string) App::config('recipient_name', '');
 $amount = money($order['amount']);
-$action = '/pay/card/' . e($order['token']);
+$action = BASE_PATH . '/pay/card/' . e($order['token']);
 ?>
 <div class="card narrow">
   <h1><?= t('card_title', ['amount' => $amount]) ?></h1>

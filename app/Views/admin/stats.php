@@ -2,7 +2,7 @@
 $maxCat = max(1, ...array_column($categories, 'raised'));
 $maxWeek = max(1, ...array_column($weeks, 'raised'));
 ?>
-<a class="muted" href="/admin"><?= t('back_admin') ?></a>
+<a class="muted" href="<?= BASE_PATH ?>/admin"><?= t('back_admin') ?></a>
 <h1><?= t('stats_title') ?></h1>
 <p class="muted small"><?= t('stats_all_time') ?></p>
 

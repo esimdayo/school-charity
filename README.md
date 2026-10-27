@@ -61,6 +61,9 @@ To try buying without sending money, add `'test'` to `payments` in `config.php`.
    admin password, `base_url` (your https address).
 4. Make `storage/` and `public/uploads/` writable by PHP.
 
+The site also works inside a folder, e.g. `http://localhost/charity/` in Laragon
+or OpenServer: links and redirects follow the folder it runs in.
+
 The database:
 - **SQLite** (default): nothing to do, the file `storage/shop.db` is created on the
   first visit.
