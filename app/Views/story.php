@@ -1,4 +1,4 @@
-<a class="muted" href="/"><?= t('back_to_shop') ?></a>
+<a class="muted" href="<?= BASE_PATH ?>/"><?= t('back_to_shop') ?></a>
 <article class="story">
   <h1><?= e($title) ?></h1>
   <?php if ($photo): ?><img src="<?= photo_url($photo) ?>" alt="<?= e($person['name']) ?>"><?php endif ?>
@@ -29,5 +29,5 @@
       <?php require ROOT . '/app/Views/partials/goal.php' ?>
     </section>
   <?php endif ?>
-  <p class="center"><a class="btn big" href="/"><?= t('story_help_button') ?></a></p>
+  <p class="center"><a class="btn big" href="<?= BASE_PATH ?>/"><?= t('story_help_button') ?></a></p>
 </article>

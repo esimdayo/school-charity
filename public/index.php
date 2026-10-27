@@ -5,6 +5,11 @@ declare(strict_types=1);
 
 define('ROOT', dirname(__DIR__));
 
+// The folder the site runs in: '' at http://charity.test/, '/charity' at
+// http://localhost/charity/ (the root .htaccess sends visitors into public/).
+// Links in the views and redirects start with it.
+define('BASE_PATH', PHP_SAPI === 'cli-server' ? '' : preg_replace('#/public$#', '', rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/')));
+
 // Built-in PHP server (php -S): let it serve real files like style.css.
 if (PHP_SAPI === 'cli-server' && is_file(__DIR__ . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH))) {
     return false;
@@ -69,4 +74,4 @@ $router->post('/admin/telegram/connect', [AdminController::class, 'connectTelegr
 
 $router->post('/telegram/webhook', [TelegramController::class, 'webhook']);
 
-$router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+$router->dispatch($_SERVER['REQUEST_METHOD'], App::path());

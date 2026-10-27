@@ -7,7 +7,7 @@ $v = fn ($k) => e($old[$k] ?? '');
   <h1><?= t('donate_title') ?></h1>
   <p class="muted"><?= t('donate_intro') ?></p>
   <?php if ($error): ?><p class="badge warn"><?= e($error) ?></p><?php endif ?>
-  <form method="post" action="/donate" enctype="multipart/form-data" class="stack">
+  <form method="post" action="<?= BASE_PATH ?>/donate" enctype="multipart/form-data" class="stack">
     <?= Csrf::field() ?>
     <label><?= t('photo') ?> <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" capture="environment" required></label>
     <label><?= t('what_is_it') ?> <input name="title" required maxlength="80" value="<?= $v('title') ?>" placeholder="<?= e(t('what_placeholder')) ?>"></label>

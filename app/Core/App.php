@@ -45,6 +45,15 @@ final class App
         return $value;
     }
 
+    // The requested path and query without BASE_PATH, e.g. /item/5 for
+    // http://localhost/charity/item/5.
+    public static function path(): string
+    {
+        $uri = (string) ($_SERVER['REQUEST_URI'] ?? '/');
+        if (BASE_PATH !== '' && str_starts_with($uri, BASE_PATH)) $uri = substr($uri, strlen(BASE_PATH));
+        return str_starts_with($uri, '/') ? $uri : '/' . $uri;
+    }
+
     public static function baseUrl(): string
     {
         return rtrim((string) self::config('base_url', ''), '/');

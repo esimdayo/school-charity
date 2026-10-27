@@ -7,12 +7,12 @@ $new = !User::profileDone(User::find((int) $user['id']));
 <div class="card narrow">
   <div class="admin-head">
     <h1><?= t('profile_title') ?></h1>
-    <form method="post" action="/logout"><?= Csrf::field() ?><button class="btn ghost small"><?= t('log_out') ?></button></form>
+    <form method="post" action="<?= BASE_PATH ?>/logout"><?= Csrf::field() ?><button class="btn ghost small"><?= t('log_out') ?></button></form>
   </div>
   <p class="muted"><?= $new ? t('profile_intro') : t('profile_tg', ['name' => e($user['name'] . ($user['username'] !== '' ? ' (@' . $user['username'] . ')' : ''))]) ?></p>
   <?php if ($saved): ?><p class="badge ok"><?= t('profile_saved') ?></p><?php endif ?>
   <?php if ($error): ?><p class="badge warn"><?= e($error) ?></p><?php endif ?>
-  <form method="post" action="/profile" class="stack">
+  <form method="post" action="<?= BASE_PATH ?>/profile" class="stack">
     <?= Csrf::field() ?>
     <input type="hidden" name="back" value="<?= e($back) ?>">
     <div class="row">
@@ -33,7 +33,7 @@ $new = !User::profileDone(User::find((int) $user['id']));
     </div>
     <button class="btn big"><?= t($back !== '' ? 'profile_save_continue' : 'save') ?></button>
   </form>
-  <?php if (!$new): ?><p class="center"><a href="/my"><?= t('nav_my_orders') ?> →</a></p><?php endif ?>
+  <?php if (!$new): ?><p class="center"><a href="<?= BASE_PATH ?>/my"><?= t('nav_my_orders') ?> →</a></p><?php endif ?>
 </div>
 <script>
   (() => {

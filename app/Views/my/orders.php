@@ -5,13 +5,13 @@ $label = fn ($s) => t(in_array($s, ['cancelled', 'unpaid'], true) ? "order_{$s}_
 ?>
 <div class="admin-head">
   <h1><?= t('my_orders_title') ?></h1>
-  <form method="post" action="/logout"><?= Csrf::field() ?><button class="btn ghost small"><?= t('log_out') ?></button></form>
+  <form method="post" action="<?= BASE_PATH ?>/logout"><?= Csrf::field() ?><button class="btn ghost small"><?= t('log_out') ?></button></form>
 </div>
-<p class="muted"><?= t('logged_in_as', ['name' => e(User::displayName($user))]) ?> <a href="/profile"><?= t('nav_profile') ?></a></p>
+<p class="muted"><?= t('logged_in_as', ['name' => e(User::displayName($user))]) ?> <a href="<?= BASE_PATH ?>/profile"><?= t('nav_profile') ?></a></p>
 <?php if ($orders): ?>
   <div class="checks card">
     <?php foreach ($orders as $o): ?>
-      <a class="check my-order" href="/order/<?= e($o['token']) ?>">
+      <a class="check my-order" href="<?= BASE_PATH ?>/order/<?= e($o['token']) ?>">
         <img class="thumb" src="<?= photo_url($o['photo']) ?>" alt="">
         <div class="check-info">
           <strong><?= e($o['title']) ?></strong>
@@ -28,6 +28,6 @@ $label = fn ($s) => t(in_array($s, ['cancelled', 'unpaid'], true) ? "order_{$s}_
 <?php else: ?>
   <div class="empty">
     <p><?= t('no_my_orders') ?></p>
-    <a class="btn" href="/"><?= t('to_shop') ?></a>
+    <a class="btn" href="<?= BASE_PATH ?>/"><?= t('to_shop') ?></a>
   </div>
 <?php endif ?>

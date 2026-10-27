@@ -1,6 +1,6 @@
 <?php
 use App\Models\Item;
-$link = fn (string $cat) => '/?' . http_build_query(array_filter(['cat' => $cat, 'q' => $search]));
+$link = fn (string $cat) => BASE_PATH . '/?' . http_build_query(array_filter(['cat' => $cat, 'q' => $search]));
 ?>
 <section class="hero<?= $goal > 0 ? ' hero-solo' : '' ?>">
   <div>
@@ -21,15 +21,15 @@ $link = fn (string $cat) => '/?' . http_build_query(array_filter(['cat' => $cat,
   <section class="goal">
     <?php require ROOT . '/app/Views/partials/goal.php' ?>
     <?php if ($hasStory): ?>
-      <div class="goal-foot"><a class="btn" href="/story"><?= t('story_button') ?></a></div>
+      <div class="goal-foot"><a class="btn" href="<?= BASE_PATH ?>/story"><?= t('story_button') ?></a></div>
     <?php endif ?>
   </section>
 <?php elseif ($hasStory): ?>
-  <p class="center"><a class="btn" href="/story"><?= t('story_button') ?></a></p>
+  <p class="center"><a class="btn" href="<?= BASE_PATH ?>/story"><?= t('story_button') ?></a></p>
 <?php endif ?>
 
 <?php if ($items || $anyItems): ?>
-  <form method="get" action="/" class="search">
+  <form method="get" action="<?= BASE_PATH ?>/" class="search">
     <?php if ($category !== ''): ?><input type="hidden" name="cat" value="<?= e($category) ?>"><?php endif ?>
     <input type="search" name="q" value="<?= e($search) ?>" placeholder="<?= e(t('search_placeholder')) ?>" aria-label="<?= e(t('search_placeholder')) ?>">
     <button class="btn"><?= t('search_button') ?></button>
@@ -45,7 +45,7 @@ $link = fn (string $cat) => '/?' . http_build_query(array_filter(['cat' => $cat,
 <?php if ($items): ?>
   <div class="grid">
     <?php foreach ($items as $item): ?>
-      <a class="item" href="/item/<?= (int) $item['id'] ?>">
+      <a class="item" href="<?= BASE_PATH ?>/item/<?= (int) $item['id'] ?>">
         <img src="<?= photo_url($item['photo']) ?>" alt="<?= e($item['title']) ?>" loading="lazy">
         <div class="item-body">
           <h3><?= e($item['title']) ?></h3>
@@ -59,12 +59,12 @@ $link = fn (string $cat) => '/?' . http_build_query(array_filter(['cat' => $cat,
 <?php elseif ($anyItems): ?>
   <div class="empty">
     <p><?= t('no_results') ?></p>
-    <a class="btn ghost" href="/"><?= t('show_all') ?></a>
+    <a class="btn ghost" href="<?= BASE_PATH ?>/"><?= t('show_all') ?></a>
   </div>
 <?php else: ?>
   <div class="empty">
     <p><?= t('empty_shop') ?></p>
-    <a class="btn" href="/donate"><?= t('donate_first') ?></a>
+    <a class="btn" href="<?= BASE_PATH ?>/donate"><?= t('donate_first') ?></a>
   </div>
 <?php endif ?>
 <script>
